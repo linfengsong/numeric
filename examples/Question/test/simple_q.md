@@ -1,0 +1,1 @@
+what is the integral of $x^2$ from 0 to 2?\nPlease reason step by step, and put your final answer within \\boxed{}.
