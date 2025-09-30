@@ -16,7 +16,13 @@ https://www.youtube.com/watch?v=I2zaPoj3G50&t=11s
 
 https://www.youtube.com/watch?v=AYNn8sLqpvI
 
+https://www.youtube.com/watch?v=Db_Ldi1VxKk
+
 https://www.youtube.com/watch?v=4Gk1a8HUvmo
+
+https://www.youtube.com/watch?v=IKTIxfFyzJs
+
+https://www.youtube.com/watch?v=IKTIxfFyzJs
 
 https://github.com/NUS-Math-Formalization/minicourse
 
