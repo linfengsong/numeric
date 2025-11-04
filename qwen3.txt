@@ -1,0 +1,38 @@
+Question:
+Please generate a tactic in lean4 to solve the state.\nHere're some theorems that may be helpful:
+{α : Sort u} → (p : α → Prop) → (∃ x, p x) → { x // p x }:=\n choice <| let ⟨x, px⟩ := h; ⟨⟨x, px⟩⟩
+
+Answer:
+Looking at your code, I can see you're defining a function that extracts a witness from an existential statement. Here's a tactic-based approach to prove this theorem:
+
+theorem exists_to_subtype {α : Sort u} (p : α → Prop) : (∃ x, p x) → { x // p x } := by
+  intro h
+  cases h with
+  | intro x hx =>
+    use x
+    exact hx
+
+Or alternatively, using the choice approach from your original code:
+
+theorem exists_to_subtype' {α : Sort u} (p : α → Prop) : (∃ x, p x) → { x // p x } := by
+  intro h
+  let ⟨x, px⟩ := h
+  use x
+  exact px
+
+If you want to use your existing choice function, you could prove it more directly:
+
+-- Assuming you have choice defined somewhere
+axiom choice {α : Sort u} (p : α → Prop) : (∃ x, p x) → { x // p x }
+
+theorem exists_to_subtype_with_choice {α : Sort u} (p : α → Prop) : (∃ x, p x) → { x // p x } := by
+  exact choice p
+
+The key tactics used here are:
+
+    intro - introduces hypotheses
+    cases or let - destructures the existential
+    use - constructs the subtype witness
+    exact - applies the proof directly
+
+Which approach fits better with what you're trying to accomplish?
