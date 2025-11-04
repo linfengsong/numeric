@@ -1,0 +1,1202 @@
+{
+    "0": {
+        "Formal name": "Classical.indefiniteDescription",
+        "Formal statement": "{α : Sort u} → (p : α → Prop) → (∃ x, p x) → { x // p x }:=\n  choice <| let ⟨x, px⟩ := h; ⟨⟨x, px⟩⟩",
+        "Informal statement": "The function `Classical.indefiniteDescription` takes a type `α` of sort `u`, a predicate `p` on `α`, and a proof `h` that there exists an element `x` in `α` such that `p x` holds. It returns an element of the subtype `{ x // p x }`, which consists of all elements `x` of `α` for which `p x` is true. This is achieved by applying the axiom of choice (`Classical.choice`) to the proof `h` and constructing an element `⟨x, px⟩` of the subtype, where `x` is the element satisfying the predicate and `px` is the proof that `p x` is true.",
+        "Informal name": "Indefinite Description of an Element Satisfying a Predicate"
+    },
+    "1": {
+        "Formal name": "Classical.choose",
+        "Formal statement": "{α : Sort u} → {p : α → Prop} → (∃ x, p x) → α:=\n  (indefiniteDescription p h).val",
+        "Informal statement": "The function `Classical.choose` takes a type `α` of sort `u`, a predicate `p` on `α`, and a proof `h` that there exists an element `x` in `α` such that `p x` holds. It returns an element `x` of `α` that satisfies the predicate `p`. This is achieved by applying the `indefiniteDescription` function to `p` and `h`, which constructs a subtype element, and then using the `Subtype.val` function to project this element back to `α`.",
+        "Informal name": "Choice of an Element Satisfying a Predicate"
+    },
+    "2": {
+        "Formal name": "Classical.choose_spec",
+        "Formal statement": "∀ {α : Sort u} {p : α → Prop} (h : ∃ x, p x), p (Classical.choose h)",
+        "Informal statement": "For any type α and any predicate p on α, if there exists an element x in α such that p x holds (denoted by the proof h), then the element chosen by the classical choice function `Classical.choose` applied to h satisfies the predicate p.",
+        "Informal name": "Specification of Classical Choice Function"
+    },
+    "3": {
+        "Formal name": "Classical.em",
+        "Formal statement": "∀ (p : Prop), p ∨ ¬p",
+        "Informal statement": "For any proposition \\( p \\), the law of excluded middle holds, i.e., either \\( p \\) is true or its negation \\( \\neg p \\) is true.",
+        "Informal name": "Law of Excluded Middle"
+    },
+    "4": {
+        "Formal name": "Classical.exists_true_of_nonempty",
+        "Formal statement": "∀ {α : Sort u}, Nonempty α → ∃ x, True",
+        "Informal statement": "For any type α, if α is non-empty, then there exists an element x in α such that the proposition True holds.",
+        "Informal name": "Existence of True in Non-empty Types"
+    },
+    "5": {
+        "Formal name": "Classical.inhabited_of_nonempty",
+        "Formal statement": "{α : Sort u} → Nonempty α → Inhabited α:=\n  ⟨choice h⟩",
+        "Informal statement": "Given a type `α` of sort `u` and a proof `h` that `α` is nonempty, the `Classical.inhabited_of_nonempty` function constructs an instance of the `Inhabited` typeclass for `α`, indicating that `α` is inhabited by an element obtained through the `Classical.choice` function applied to `h`. In simpler terms, if we have a proof that a type has at least one element, this function allows us to assert that the type is inhabited, providing a default element for the type.",
+        "Informal name": "Construct Inhabited Instance from Nonempty"
+    },
+    "6": {
+        "Formal name": "Classical.inhabited_of_exists",
+        "Formal statement": "{α : Sort u} → {p : α → Prop} → (∃ x, p x) → Inhabited α:=\n  inhabited_of_nonempty (Exists.elim h (fun w _ => ⟨w⟩))",
+        "Informal statement": "For any type $α$ of sort $u$ and any predicate $p : α → Prop$, if there exists an element $x$ such that $p(x)$ is true, then the type $α$ is inhabited. The `Classical.inhabited_of_exists` function constructs an instance of the `Inhabited` typeclass for `α`, indicating that `α$ is inhabited by an element obtained through the `Exists.elim` function applied to the proof of existence `h`, which extracts an element `w` satisfying the predicate `p` and constructs a singleton proof of `Nonempty α` using `⟨w⟩`. This singleton proof is then used to construct the `Inhabited α` instance via `inhabited_of_nonempty`.",
+        "Informal name": "Construct Inhabited Instance from Existence of Predicate Solution"
+    },
+    "7": {
+        "Formal name": "Classical.propDecidable",
+        "Formal statement": "(a : Prop) → Decidable a",
+        "Informal statement": "In classical logic, every proposition $a$ is decidable, meaning there exists a proof that either $a$ is true or its negation is true. The `Classical.propDecidable` instance ensures that for any proposition $a$, the `Decidable a` typeclass is inhabited, guaranteeing the existence of a decision procedure for $a$.",
+        "Informal name": "Decidability of Propositions in Classical Logic"
+    },
+    "8": {
+        "Formal name": "Classical.decidableInhabited",
+        "Formal statement": "(a : Prop) → Inhabited (Decidable a)where\n  default := inferInstance",
+        "Informal statement": "In classical logic, every proposition $a$ is associated with an inhabited `Decidable a` type, which means there is a designated element representing the decision procedure for $a$. The `Classical.decidableInhabited` definition ensures that for any proposition $a$, the `Decidable a` type is inhabited by using the `inferInstance` function to construct the default element, which is a proof of the decidability of $a$.",
+        "Informal name": "Inhabited Decidability in Classical Logic"
+    },
+    "9": {
+        "Formal name": "Classical.typeDecidableEq",
+        "Formal statement": "(α : Sort u) → DecidableEq α:=\n  fun _ _ => inferInstance",
+        "Informal statement": "In classical reasoning, for any type `α` of sort `u`, the `DecidableEq α` instance is guaranteed to exist, ensuring that the equality relation on `α` is decidable. This instance is constructed by inferring the decidability of equality for `α` using the `inferInstance` function, which automatically synthesizes the required instance by typeclass inference.",
+        "Informal name": "Decidability of Equality in Classical Reasoning"
+    },
+    "10": {
+        "Formal name": "Classical.typeDecidable",
+        "Formal statement": "(α : Sort u) → α ⊕' (α → False):=\n  match (propDecidable (Nonempty α)) with\n  | (isTrue hp)  => PSum.inl (@default _ (inhabited_of_nonempty hp))\n  | (isFalse hn) => PSum.inr (fun a => absurd (Nonempty.intro a) hn)",
+        "Informal statement": "For any type \\( \\alpha \\) of sort \\( u \\), the function `Classical.typeDecidable` constructs a disjoint union of \\( \\alpha \\) and the proposition that every element of \\( \\alpha \\) leads to a contradiction. If \\( \\alpha \\) is non-empty, it returns an element of \\( \\alpha \\) using the `Inhabited.default` function obtained from `Classical.inhabited_of_nonempty`. If \\( \\alpha \\) is empty, it returns a function that, given an element of \\( \\alpha \\), produces a contradiction by applying `absurd` to the proof of non-emptiness and the negation of the non-emptiness proof.",
+        "Informal name": "Type Decidability in Classical Logic"
+    },
+    "11": {
+        "Formal name": "Classical.strongIndefiniteDescription",
+        "Formal statement": "{α : Sort u} → (p : α → Prop) → Nonempty α → { x // (∃ y, p y) → p x }:=\n  @dite _ (∃ x : α, p x) (propDecidable _)\n    (fun (hp : ∃ x : α, p x) =>\n      show {x : α // (∃ y : α, p y) → p x} from\n      let xp := indefiniteDescription _ hp;\n      ⟨xp.val, fun _ => xp.property⟩)\n    (fun hp => ⟨choice h, fun h => absurd h hp⟩)",
+        "Informal statement": "The function `Classical.strongIndefiniteDescription` takes a type `α` of sort `u`, a predicate `p` on `α`, and a proof `h` that `α` is nonempty. It returns a subtype `{ x // (∃ y, p y) → p x }`, which consists of all elements `x` of `α` for which there exists a proof that for any `y` in `α` such that `p y` holds, `p x` also holds. The function uses the `dite` construct to perform a case analysis on the decidability of the existence of an element `x` in `α` such that `p x` holds. If such an element exists, it constructs an element of the subtype using the `indefiniteDescription` function and the proof of existence. If no such element exists, it constructs an element of the subtype using the `choice` function on the proof `h` that `α` is nonempty and a function that proves the absurdity of the existence proof for `p x`.",
+        "Informal name": "Strong Indefinite Description with Case Analysis"
+    },
+    "12": {
+        "Formal name": "Classical.epsilon",
+        "Formal statement": "{α : Sort u} → [h : Nonempty α] → (α → Prop) → α:=\n  (strongIndefiniteDescription p h).val",
+        "Informal statement": "The function `Classical.epsilon` takes a type `α` of sort `u`, a proof `h` that `α` is nonempty, and a predicate `p` on `α`. It returns an element `x` of `α` such that for any `y` in `α` for which `p y` holds, `p x` also holds. The function uses the `strongIndefiniteDescription` function to construct a subtype `{ x // (∃ y, p y) → p x }` and then projects the underlying value `x` of `α` using the `val` function.",
+        "Informal name": "Hilbert Epsilon Function"
+    },
+    "13": {
+        "Formal name": "Classical.epsilon_spec_aux",
+        "Formal statement": "∀ {α : Sort u} (h : Nonempty α) (p : α → Prop), (∃ y, p y) → p (Classical.epsilon p)",
+        "Informal statement": "For any type α of some sort u, given that α is nonempty and a predicate p on α, if there exists an element y in α such that p y holds, then the element obtained by applying the Classical.epsilon function to p also satisfies the predicate p.",
+        "Informal name": "Auxiliary Specification of Classical Epsilon"
+    },
+    "14": {
+        "Formal name": "Classical.epsilon_spec",
+        "Formal statement": "∀ {α : Sort u} {p : α → Prop} (hex : ∃ y, p y), p (Classical.epsilon p)",
+        "Informal statement": "For any type α of some sort u and any predicate p on α, if there exists an element y in α such that p y holds, then the element obtained by applying the Classical.epsilon function to p also satisfies the predicate p.",
+        "Informal name": "Specification of Classical Epsilon"
+    },
+    "15": {
+        "Formal name": "Classical.epsilon_singleton",
+        "Formal statement": "∀ {α : Sort u} (x : α), (Classical.epsilon fun y => y = x) = x",
+        "Informal statement": "For any type α of some sort u and any element x in α, the application of the Classical.epsilon function to the predicate that asserts y is equal to x returns the element x itself.",
+        "Informal name": "Classical Epsilon applied to singleton predicate"
+    },
+    "16": {
+        "Formal name": "Classical.axiomOfChoice",
+        "Formal statement": "∀ {α : Sort u} {β : α → Sort v} {r : (x : α) → β x → Prop}, (∀ (x : α), ∃ y, r x y) → ∃ f, ∀ (x : α), r x (f x)",
+        "Informal statement": "For any type α of sort u, any function β from α to another sort v, and any predicate r on α and β, if for each element x in α there exists an element y in β(x) such that r x y holds, then there exists a function f from α to the union of the sorts of β(x) for all x in α, such that for each x in α, r x (f x) holds. This theorem is a formalization of the Axiom of Choice, which states that if there is a set of nonempty sets, then one can choose an element from each set.",
+        "Informal name": "Axiom of Choice"
+    },
+    "17": {
+        "Formal name": "Classical.skolem",
+        "Formal statement": "∀ {α : Sort u} {b : α → Sort v} {p : (x : α) → b x → Prop}, (∀ (x : α), ∃ y, p x y) ↔ ∃ f, ∀ (x : α), p x (f x)",
+        "Informal statement": "For any type $α$ and any function $b : α → Sort v$, and any predicate $p : (x : α) → b x → Prop$, the Skolem's theorem states that the existence of an element $y$ for each $x$ such that $p x y$ holds is equivalent to the existence of a function $f$ such that for each $x$, $p x (f x)$ holds.",
+        "Informal name": "Skolem's Theorem"
+    },
+    "18": {
+        "Formal name": "Classical.propComplete",
+        "Formal statement": "∀ (a : Prop), a = True ∨ a = False",
+        "Informal statement": "For any proposition \\( a \\), it is either equivalent to the truth proposition \\( True \\) or equivalent to the contradiction proposition \\( False \\).",
+        "Informal name": "Propositional Completeness in Classical Logic"
+    },
+    "19": {
+        "Formal name": "Classical.byCases",
+        "Formal statement": "∀ {p q : Prop}, (p → q) → (¬p → q) → q",
+        "Informal statement": "For any two propositions \\( p \\) and \\( q \\), if there exists a function that maps \\( p \\) to \\( q \\) and another function that maps the negation of \\( p \\) to \\( q \\), then \\( q \\) is true.",
+        "Informal name": "Case Analysis in Classical Logic"
+    },
+    "20": {
+        "Formal name": "Classical.byContradiction",
+        "Formal statement": "∀ {p : Prop}, (¬p → False) → p",
+        "Informal statement": "For any proposition \\( p \\), if the assumption that \\( p \\) is false leads to a contradiction (False), then \\( p \\) must be true.",
+        "Informal name": "Proof by Contradiction in Classical Logic"
+    },
+    "21": {
+        "Formal name": "Classical.inhabited_of_exists.proof_1",
+        "Formal statement": "∀ {α : Sort u_1} {p : α → Prop}, (∃ x, p x) → Nonempty α",
+        "Informal statement": "For any type $α$ and predicate $p : α → Prop$, if there exists an element $x$ such that $p(x)$ holds, then the type $α$ is non-empty.",
+        "Informal name": "Non-emptiness of a type from existence of a predicate's solution"
+    },
+    "22": {
+        "Formal name": "Classical.propDecidable.proof_1",
+        "Formal statement": "∀ (a : Prop), Nonempty (Decidable a)",
+        "Informal statement": "For any proposition $a$, the type of decidable propositions of $a$ is non-empty.",
+        "Informal name": "Non-emptiness of decidable propositions"
+    },
+    "23": {
+        "Formal name": "Classical.indefiniteDescription.proof_1",
+        "Formal statement": "∀ {α : Sort u_1} (p : α → Prop), (∃ x, p x) → Nonempty { x // p x }",
+        "Informal statement": "For any type α and a predicate p on α, if there exists an element x such that p x holds, then the subtype { x // p x } is non-empty.",
+        "Informal name": "Existence of elements in a predicate-based subtype"
+    },
+    "24": {
+        "Formal name": "Classical.strongIndefiniteDescription.proof_1",
+        "Formal statement": "∀ {α : Sort u_1} (p : α → Prop) (hp : ∃ y, p y), (∃ y, p y) → p (Classical.indefiniteDescription (fun x => p x) hp).val",
+        "Informal statement": "For any type `α` and any predicate `p` on `α`, given a proof `hp` that there exists an element `y` in `α` such that `p y` holds, if there exists an element `y` in `α` such that `p y` holds, then `p` holds for the value of the element returned by the `Classical.indefiniteDescription` function applied to the predicate `p` and the proof `hp`.",
+        "Informal name": "Existence of a Satisfying Element via Strong Indefinite Description"
+    },
+    "25": {
+        "Formal name": "Classical.strongIndefiniteDescription.proof_2",
+        "Formal statement": "∀ {α : Sort u_1} (p : α → Prop) (h : Nonempty α), (¬∃ x, p x) → (∃ y, p y) → p (Classical.choice h)",
+        "Informal statement": "For any type `α` and predicate `p` on `α`, given a proof `h` that `α` is nonempty, if there does not exist an element `x` in `α` such that `p x` holds, then for any proof `h'` that there exists a `y` in `α` such that `p y` holds, `p` holds for the element chosen by the axiom of choice applied to `h`.",
+        "Informal name": "Strong Indefinite Description with Axiom of Choice"
+    },
+    "26": {
+        "Formal name": "Classical.typeDecidable.proof_1",
+        "Formal statement": "∀ (α : Sort u_1), ¬Nonempty α → α → False",
+        "Informal statement": "For any type \\( \\alpha \\) of sort \\( u_1 \\), if \\( \\alpha \\) is not non-empty, then the existence of an element \\( a \\) of type \\( \\alpha \\) leads to a contradiction. In other words, if we assume that \\( \\alpha \\) is empty (does not have any elements) and yet we have an element \\( a \\) in \\( \\alpha \\), this leads to a logical inconsistency, represented by the proposition \\( \\text{False} \\).",
+        "Informal name": "Existence contradiction for empty types"
+    },
+    "27": {
+        "Formal name": "Coe",
+        "Formal statement": "semiOutParam (Sort u) → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `Coe` structure is a typeclass for coercions from a type `α` to a type `β`. It allows for the automatic insertion of a function to convert an element of type `α` to an element of type `β` when needed. This coercion can be chained with other `Coe` instances, and it is automatically applied when an element `x` of type `α` is used in a context where type `β` is expected. The `↑x` operator can be used to explicitly trigger the coercion.",
+        "Informal name": "Coercion Typeclass"
+    },
+    "28": {
+        "Formal name": "CoeTC",
+        "Formal statement": "Sort u → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeTC` structure is an auxiliary typeclass that implements the `Coe*` coercion mechanism. It takes two arguments: a source sort `u` and a target sort `v`, and it returns a sort that is the maximum of the maximum of 1, `u`, and `v`. This structure is used to define coercions between different sorts, allowing Lean to automatically insert invisible functions to fix type errors.",
+        "Informal name": "Coercion Typeclass"
+    },
+    "29": {
+        "Formal name": "instCoeTC",
+        "Formal statement": "{β : Sort u_1} → {γ : Sort u_2} → {α : Sort u_3} → [inst : Coe β γ] → [inst : CoeTC α β] → CoeTC α γ",
+        "Informal statement": "For any sorts \\( \\beta \\), \\( \\gamma \\), and \\( \\alpha \\), if there exists a coercion from \\( \\beta \\) to \\( \\gamma \\) and an instance of the `CoeTC` typeclass for coercion from \\( \\alpha \\) to \\( \\beta \\), then there exists an instance of the `CoeTC` typeclass for coercion from \\( \\alpha \\) to \\( \\gamma \\). This instance allows Lean to automatically insert coercions to convert elements of type \\( \\alpha \\) to type \\( \\gamma \\) when needed.",
+        "Informal name": "Coercion Chain Extension for `CoeTC` Typeclass"
+    },
+    "30": {
+        "Formal name": "instCoeTC_1",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : Coe α β] → CoeTC α β",
+        "Informal statement": "For any two sorts \\( \\alpha \\) and \\( \\beta \\), if there exists a coercion from \\( \\alpha \\) to \\( \\beta \\) (denoted by an instance of `Coe α β`), then there is a corresponding instance of `CoeTC α β` that allows for the automatic insertion of coercions between these sorts.",
+        "Informal name": "Coercion Instance for Two Sorts"
+    },
+    "31": {
+        "Formal name": "instCoeTC_2",
+        "Formal statement": "{α : Sort u_1} → CoeTC α α",
+        "Informal statement": "For any sort \\( \\alpha \\) in the universe \\( u_1 \\), there exists a coercion typeclass instance for \\( \\alpha \\) to itself.",
+        "Informal name": "Self Coercion Typeclass Instance for Sorts"
+    },
+    "32": {
+        "Formal name": "CoeOut",
+        "Formal statement": "Sort u → semiOutParam (Sort v) → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeOut` structure is used for defining coercions that are applied from left-to-right between types. It takes two types `α` and `β` as parameters, where `α` is of sort `u` and `β` is of sort `v`. The resulting sort is the maximum of `u`, `v`, and 1.",
+        "Informal name": "Coercion from Left-to-Right"
+    },
+    "33": {
+        "Formal name": "CoeOTC",
+        "Formal statement": "Sort u → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeOTC` structure is an auxiliary class that implements the chaining of `CoeOut` and `Coe` instances. It is used to define a coercion from a source type `α` of sort `u` to a target type `β` of sort `v`, where the resulting sort is the maximum of the source and target sorts, along with an additional universe level 1.",
+        "Informal name": "Coercion Out and Coercion Structure"
+    },
+    "34": {
+        "Formal name": "instCoeOTC",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → {γ : Sort u_3} → [inst : CoeOut α β] → [inst : CoeOTC β γ] → CoeOTC α γ",
+        "Informal statement": "For any three types \\( \\alpha \\), \\( \\beta \\), and \\( \\gamma \\) in respective universes \\( u_1 \\), \\( u_2 \\), and \\( u_3 \\), if there exists a `CoeOut` instance from \\( \\alpha \\) to \\( \\beta \\) and a `CoeOTC` instance from \\( \\beta \\) to \\( \\gamma \\), then there exists a `CoeOTC` instance from \\( \\alpha \\) to \\( \\gamma \\). This instance allows for the chaining of coercions from \\( \\alpha \\) to \\( \\beta \\) and then from \\( \\beta \\) to \\( \\gamma \\), enabling the automatic insertion of coercions to resolve type inconsistencies.",
+        "Informal name": "Chained Coercion Out and Coercion Structure Instance"
+    },
+    "35": {
+        "Formal name": "instCoeOTC_1",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : CoeTC α β] → CoeOTC α β",
+        "Informal statement": "For any source type \\( \\alpha \\) of sort \\( u_1 \\) and any target type \\( \\beta \\) of sort \\( u_2 \\), given an instance of `CoeTC` that defines the coercion from \\( \\alpha \\) to \\( \\beta \\), there exists a corresponding `CoeOTC` instance that chains the coercion from \\( \\alpha \\) to \\( \\beta \\).",
+        "Informal name": "Coercion Chaining Instance for `CoeTC` and `CoeOTC`"
+    },
+    "36": {
+        "Formal name": "instCoeOTC_2",
+        "Formal statement": "{α : Sort u_1} → CoeOTC α α",
+        "Informal statement": "For any type \\( \\alpha \\) of sort \\( u_1 \\), there exists a coercion from \\( \\alpha \\) to itself, represented by the `CoeOTC` structure.",
+        "Informal name": "Self-Coercion of a Type"
+    },
+    "37": {
+        "Formal name": "CoeHead",
+        "Formal statement": "Sort u → semiOutParam (Sort v) → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeHead` structure is used for defining coercions that are applied from left-to-right at most once at the beginning of the coercion chain. It takes two parameters: a sort `u` and a semi-out-parameter sort `v`, and it returns a sort that is the maximum of `u`, `v`, and 1.",
+        "Informal name": "Single-use Left-to-right Coercion Structure"
+    },
+    "38": {
+        "Formal name": "CoeHTC",
+        "Formal statement": "Sort u → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeHTC` structure is an auxiliary class that implements the chaining of `CoeHead`, `CoeOut`, and `Coe` instances. It is designed to facilitate the process of coercion resolution in Lean, where a coercion is an invisible function that automatically corrects type errors. The `CoeHTC` structure takes two universe parameters `u` and `v`, and it extends the universe to the maximum of the original universe `u`, the universe `v`, and 1.",
+        "Informal name": "Coercion Hierarchy Chain"
+    },
+    "39": {
+        "Formal name": "instCoeHTC",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → {γ : Sort u_3} → [inst : CoeHead α β] → [inst : CoeOTC β γ] → CoeHTC α γ",
+        "Informal statement": "For any types \\( \\alpha \\), \\( \\beta \\), and \\( \\gamma \\) in universes \\( u_1 \\), \\( u_2 \\), and \\( u_3 \\) respectively, if there exists a `CoeHead` instance from \\( \\alpha \\) to \\( \\beta \\) and a `CoeOTC` instance from \\( \\beta \\) to \\( \\gamma \\), then there is an instance of `CoeHTC` from \\( \\alpha \\) to \\( \\gamma \\). This instance is used to chain coercions from \\( \\alpha \\) to \\( \\gamma \\) through \\( \\beta \\), resolving type errors through automatic insertion of coercions.",
+        "Informal name": "Coercion Hierarchy Chain Instance"
+    },
+    "40": {
+        "Formal name": "instCoeHTC_1",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : CoeOTC α β] → CoeHTC α β",
+        "Informal statement": "For any two types \\( \\alpha \\) and \\( \\beta \\) from the universes \\( u_1 \\) and \\( u_2 \\) respectively, given an instance of `CoeOTC α β` that chains `CoeOut` and `Coe` instances, we can construct an instance of `CoeHTC α β` that implements the chaining of `CoeHead`, `CoeOut`, and `Coe` instances, facilitating the coercion resolution process in Lean.",
+        "Informal name": "Coercion Hierarchy Chain Instance from Coercion Out and Coercion"
+    },
+    "41": {
+        "Formal name": "instCoeHTC_2",
+        "Formal statement": "{α : Sort u_1} → CoeHTC α α",
+        "Informal statement": "For any type \\( \\alpha \\) in the universe \\( u_1 \\), there exists a coercion hierarchy chain instance \\( CoeHTC \\alpha \\alpha \\) that allows for the chaining of coercions from \\( \\alpha \\) to itself.",
+        "Informal name": "Self Coercion Hierarchy Chain Instance"
+    },
+    "42": {
+        "Formal name": "CoeTail",
+        "Formal statement": "semiOutParam (Sort u) → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeTail` structure is used for defining coercions that can only appear at the end of a sequence of coercions. It takes a semi-out-parameter of sort `u`, a sort `v`, and returns a sort that is the maximum of the maximum of 1, `u`, and `v`. This structure is used when the source type `α` can be further coerced via `Coe σ α` and `CoeHead τ σ` instances, but the target type `β` will only be the expected type of the expression.",
+        "Informal name": "Coercion Tail Structure"
+    },
+    "43": {
+        "Formal name": "CoeHTCT",
+        "Formal statement": "Sort u → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeHTCT` structure is an auxiliary class that implements a chain of coercions from the left side (`CoeHead? CoeOut*`) and from the right side (`Coe* CoeTail?`). It is used to resolve type errors by automatically inserting invisible functions to convert between types. The `CoeHTCT` structure takes two universe parameters `u` and `v` and returns a sort that is the maximum of the universes involved in the coercions.",
+        "Informal name": "Coercion Hierarchy Chain Type Class"
+    },
+    "44": {
+        "Formal name": "instCoeHTCT",
+        "Formal statement": "{β : Sort u_1} → {γ : Sort u_2} → {α : Sort u_3} → [inst : CoeTail β γ] → [inst : CoeHTC α β] → CoeHTCT α γ",
+        "Informal statement": "Given sorts `α`, `β`, and `γ`, along with instances of `CoeTail β γ` and `CoeHTC α β`, the `instCoeHTCT` instance provides a chain of coercions from `α` to `γ`. This chain consists of the coercion from `α` to `β` provided by the `CoeHTC α β` instance, followed by the coercion from `β` to `γ` provided by the `CoeTail β γ` instance. The `CoeHTCT α γ` structure represents this combined coercion, allowing Lean to automatically insert invisible functions to convert between types `α` and `γ` when resolving type errors.",
+        "Informal name": "Coercion Hierarchy Chain Instance for Combined Coercions"
+    },
+    "45": {
+        "Formal name": "instCoeHTCT_1",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : CoeHTC α β] → CoeHTCT α β",
+        "Informal statement": "For any two sorts \\( \\alpha \\) and \\( \\beta \\), if there exists a chain of coercions from \\( \\alpha \\) to \\( \\beta \\) represented by an instance of `CoeHTC α β`, then there is an instance of `CoeHTCT α β` that defines a chain of coercions from \\( \\alpha \\) to \\( \\beta \\). This instance is used by Lean's coercion system to automatically insert invisible functions to resolve type errors.",
+        "Informal name": "Coercion Chain Instance between Sorts"
+    },
+    "46": {
+        "Formal name": "instCoeHTCT_2",
+        "Formal statement": "{α : Sort u_1} → CoeHTCT α α",
+        "Informal statement": "For any type \\( \\alpha \\) in a certain universe \\( u_1 \\), there exists a chain of coercions from \\( \\alpha \\) to itself, represented by the `CoeHTCT` type class instance.",
+        "Informal name": "Self-Coercion Chain for a Type"
+    },
+    "47": {
+        "Formal name": "CoeDep",
+        "Formal statement": "(α : Sort u) → α → Sort v → Sort (max 1 v)",
+        "Informal statement": "The `CoeDep` structure is a typeclass for dependent coercions, which allows the target type `β` to depend on the value `x : α`. It is used when the coercion function is dependent on the specific value being coerced. For example, it is used for coercions like `Prop → Bool` where the validity of the coercion depends on the proposition being `Decidable`. The `CoeDep` structure takes as parameters the source type `α`, the value `x` of type `α`, and the target type `β`, which can be any sort `v`. The resulting type is a sort that is the maximum of `1` and `v`.",
+        "Informal name": "Dependent Coercion Typeclass"
+    },
+    "48": {
+        "Formal name": "CoeT",
+        "Formal statement": "(α : Sort u) → α → Sort v → Sort (max 1 v)",
+        "Informal statement": "The `CoeT` structure is a fundamental typeclass in Lean that is used to resolve type errors and facilitate coercions. It represents a chain of coercion instances that can be applied to an element `a : α` to coerce it to a different type `β`. The `CoeT` chain can include instances of `CoeHead`, `CoeOut`, `Coe`, `CoeTail`, or `CoeDep`, and it is used to transform an element from one sort to another, potentially involving multiple intermediate steps. The `CoeT` structure is invoked when the `↑` notation or double type ascription is used to explicitly indicate a coercion.",
+        "Informal name": "Type Coercion Chain"
+    },
+    "49": {
+        "Formal name": "instCoeT",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → {a : α} → [inst : CoeHTCT α β] → CoeT α a β",
+        "Informal statement": "For any two types \\( \\alpha \\) and \\( \\beta \\) within their respective universes \\( u_1 \\) and \\( u_2 \\), and an element \\( a \\) of type \\( \\alpha \\), there exists a coercion from \\( a \\) to \\( \\beta \\) if an instance of the coercion hierarchy chain type class \\( CoeHTCT \\) exists for \\( \\alpha \\) and \\( \\beta \\). This coercion is represented by the \\( CoeT \\) structure, which allows for the transformation of \\( a \\) to an element of type \\( \\beta \\) through a chain of coercion instances.",
+        "Informal name": "Existence of Coercion from Element to Type via Coercion Hierarchy Chain"
+    },
+    "50": {
+        "Formal name": "instCoeT_1",
+        "Formal statement": "{α : Sort u_1} → {a : α} → {β : Sort u_2} → [inst : CoeDep α a β] → CoeT α a β",
+        "Informal statement": "For any types \\( \\alpha \\) and \\( \\beta \\) of sorts \\( u_1 \\) and \\( u_2 \\), respectively, and an element \\( a \\) of type \\( \\alpha \\), if there exists an instance of the dependent coercion \\( CoeDep \\) from \\( \\alpha \\) to \\( \\beta \\) for \\( a \\), then there is a coercion chain \\( CoeT \\) from \\( \\alpha \\) to \\( \\beta \\) for \\( a \\). This instance allows for the automatic insertion of a coercion to resolve a type error when an element of type \\( \\alpha \\) is used in a context expecting a type \\( \\beta \\).",
+        "Informal name": "Dependent Coercion to Type Coercion Chain Instance"
+    },
+    "51": {
+        "Formal name": "instCoeT_2",
+        "Formal statement": "{α : Sort u_1} → {a : α} → CoeT α a α",
+        "Informal statement": "For any type \\( \\alpha \\) and any element \\( a \\) of type \\( \\alpha \\), there exists a coercion chain that allows the element \\( a \\) to be coerced to the same type \\( \\alpha \\). This coercion chain, represented by the `CoeT` structure, is automatically applied when an element is used in a context where its type is expected.",
+        "Informal name": "Coercion of Element to Same Type"
+    },
+    "52": {
+        "Formal name": "CoeFun",
+        "Formal statement": "(α : Sort u) → outParam (α → Sort v) → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeFun` structure is a typeclass that provides a coercion from a type `α` to a function type `α → Sort v`. It is used when an element `f : α` is used in a context where a function is expected, such as in an application `f x`. The `CoeFun` structure is parameterized by a sort `u` for `α` and an out-parameter function type `α → Sort v`, and it produces a sort that is the maximum of `u`, `1`, and `v`.",
+        "Informal name": "Coercion to Function"
+    },
+    "53": {
+        "Formal name": "instCoeOut",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : CoeFun α fun x => β] → CoeOut α β",
+        "Informal statement": "For any types \\( \\alpha \\) and \\( \\beta \\) where \\( \\alpha \\) is of sort \\( u_1 \\) and \\( \\beta \\) is of sort \\( u_2 \\), if there exists a `CoeFun` instance for coercing \\( \\alpha \\) to a function type \\( \\beta \\), then there is an instance of `CoeOut` for coercing \\( \\alpha \\) to \\( \\beta \\). This means that elements of type \\( \\alpha \\) can be automatically coerced to type \\( \\beta \\) when used in a context that expects \\( \\beta \\).",
+        "Informal name": "Coercion from `CoeFun` to `CoeOut`"
+    },
+    "54": {
+        "Formal name": "CoeSort",
+        "Formal statement": "Sort u → outParam (Sort v) → Sort (max (max 1 u) v)",
+        "Informal statement": "The `CoeSort` structure defines a coercion from a sort `u` to another sort `v`. It is used when an element of type `u` is expected in a context where a type is required, such as in a type annotation or a function type. The coercion is defined for any pair of sorts `u` and `v`, and the resulting sort is the maximum of the universes `u` and `v`, with an additional universe level 1 included.",
+        "Informal name": "Coercion to a Sort"
+    },
+    "55": {
+        "Formal name": "instCoeOut_1",
+        "Formal statement": "{α : Sort u_1} → {β : Sort u_2} → [inst : CoeSort α β] → CoeOut α β",
+        "Informal statement": "For any two sorts \\( \\alpha \\) and \\( \\beta \\), if there exists a `CoeSort` instance that defines a coercion from \\( \\alpha \\) to \\( \\beta \\), then there is an implicit `CoeOut` instance that allows for the coercion from \\( \\alpha \\) to \\( \\beta \\) to be applied from left to right.",
+        "Informal name": "Implicit Coercion from Left-to-Right for Sorts"
+    },
+    "56": {
+        "Formal name": "boolToProp",
+        "Formal statement": "Coe Bool Prop",
+        "Informal statement": "For any boolean value \\( b \\) in the `Bool` type, there exists a coercion to the `Prop` type, denoted as \\( b \to P \\) for some proposition \\( P \\). This coercion is used to interpret boolean values as propositions in the context of logical reasoning.",
+        "Informal name": "Coercion from Boolean to Proposition"
+    },
+    "57": {
+        "Formal name": "boolToSort",
+        "Formal statement": "CoeSort Bool Prop",
+        "Informal statement": "For any boolean value \\( b \\), there exists a coercion to the sort of propositions, denoted as \\( b : Prop \\). This coercion is used when a boolean value is expected in a context where a proposition is required.",
+        "Informal name": "Coercion of Boolean Values to Propositions"
+    },
+    "58": {
+        "Formal name": "decPropToBool",
+        "Formal statement": "(p : Prop) → [inst : Decidable p] → CoeDep Prop p Bool",
+        "Informal statement": "Given a proposition \\( p \\) and an instance \\( inst \\) of \\( Decidable \\, p \\), there exists a dependent coercion from \\( p \\) to \\( Bool \\) using the `CoeDep` structure. This means that for a proposition \\( p \\) that is known to be decidable, we can coerce the truth value of \\( p \\) to a boolean value, where \\( true \\) represents \\( p \\) being true and \\( false \\) represents \\( p \\) being false.",
+        "Informal name": "Dependent Coercion from Decidable Proposition to Boolean"
+    },
+    "59": {
+        "Formal name": "optionCoe",
+        "Formal statement": "{α : Type u} → Coe α (Option α)",
+        "Informal statement": "For any type \\( \\alpha \\) in the universe \\( u \\), there exists a coercion from \\( \\alpha \\) to the option type \\( \\text{Option} \\, \\alpha \\). This means that elements of type \\( \\alpha \\) can be automatically converted to elements of type \\( \\text{Option} \\, \\alpha \\) by wrapping them in the `Some` constructor, effectively providing a way to represent nullability or the absence of a value.",
+        "Informal name": "Coercion from Type to Option Type"
+    },
+    "60": {
+        "Formal name": "subtypeCoe",
+        "Formal statement": "{α : Sort u} → {p : α → Prop} → CoeOut (Subtype p) α",
+        "Informal statement": "For any type \\( \\alpha \\) and any predicate \\( p \\) on \\( \\alpha \\), there exists a coercion from the subtype \\( \\{x \\in \\alpha \\mid p(x)\\} \\) to the original type \\( \\alpha \\). This coercion allows elements of the subtype to be used as if they were elements of \\( \\alpha \\), preserving the underlying value while respecting the predicate \\( p \\).",
+        "Informal name": "Coercion from Subtype to Original Type"
+    },
+    "61": {
+        "Formal name": "CoeHead.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHead α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeHead α β) → motive t",
+        "Informal statement": "The `CoeHead.rec` function is a recursion principle for the `CoeHead` structure. It takes as arguments a sort `α`, a sort `β`, a motive function `motive` that takes a `CoeHead` instance and returns a sort `u_1`, a function that maps a coercion `coe : α → β` to the motive applied to a `CoeHead` instance with `coe` as its coercion, and a `CoeHead` instance `t`. It returns the result of applying the motive function to `t`.",
+        "Informal name": "CoeHead Recursion Principle"
+    },
+    "62": {
+        "Formal name": "CoeHTC.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTC α β → Sort u_1} → (t : CoeHTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHTC.recOn` function is a recursion principle for the `CoeHTC` structure, which is used to facilitate the process of coercion resolution in Lean. It takes a source sort `α` of universe `u`, a target sort `β` of universe `v`, a motive function `motive` that maps an instance of `CoeHTC α β` to a sort `u_1`, and an instance `t` of `CoeHTC α β`. The function then takes a constructor function `coe` that maps elements of type `α` to elements of type `β` and applies it to the motive function, returning the motive of `t`.",
+        "Informal name": "Coercion Hierarchy Chain Recursion Principle"
+    },
+    "63": {
+        "Formal name": "CoeHead.coe",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → [self : CoeHead α β] → α → β",
+        "Informal statement": "Given a source type `α` of sort `u` and a target type `β` of sort `v` as a semi-out-parameter, the `CoeHead.coe` function provides a coercion from `α` to `β` using the `CoeHead` instance `self`. This function is used to convert an element of type `α` to an element of type `β` in a single-use, left-to-right manner.",
+        "Informal name": "Single-use Left-to-right Coercion Function"
+    },
+    "64": {
+        "Formal name": "CoeFun.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {γ : α → Sort v} →\n    {motive : CoeFun α γ → Sort u_1} → (t : CoeFun α γ) → ((coe : (f : α) → γ f) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeFun.casesOn` function is a case analysis principle for the `CoeFun` structure. Given a type `α` with sort `u`, a function `γ` from `α` to a sort `v`, and a motive `motive` from `CoeFun α γ` to a sort `u_1`, it allows you to analyze a term `t : CoeFun α γ` by providing a function `coe` from `α` to `γ f` and a motive for `coe`. The function `CoeFun.casesOn` then returns the motive applied to `t : CoeFun α γ`.",
+        "Informal name": "Case Analysis for Coercion to Function"
+    },
+    "65": {
+        "Formal name": "CoeHead.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → Sort u_1 → CoeHead α β → CoeHead α β → Sort u_1",
+        "Informal statement": "The `CoeHead.noConfusionType` function is used to resolve confusion when comparing two instances of `CoeHead α β`. It takes as input a sort `α`, a semi-out-parameter sort `β`, a sort `u_1`, and two instances of `CoeHead α β`. It returns a sort `u_1` that can be used to define a function that compares these instances.",
+        "Informal name": "Confusion Resolution for CoeHead Instances"
+    },
+    "66": {
+        "Formal name": "CoeOut.noConfusion",
+        "Formal statement": "{α : Sort u} →\n  {β : semiOutParam (Sort v)} → {P : Sort u_1} → {v1 v2 : CoeOut α β} → Eq v1 v2 → CoeOut.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeOut.noConfusion` function is used to resolve potential confusion when comparing two `CoeOut` instances between types `α` and `β`. Given a source type `α` of sort `u`, a target type `β` of sort `v`, a sort `u_1`, and two `CoeOut` instances `v1` and `v2` from `α` to `β`, this function takes a proof of their equality `Eq v1 v2` and returns a value of sort `u_1` using the `CoeOut.noConfusionType` function. This function is particularly useful in situations where the coercion from `α` to `β` might lead to ambiguity or confusion, and it helps to clarify the intended coercion path.",
+        "Informal name": "Coercion Disambiguation for CoeOut Instances"
+    },
+    "67": {
+        "Formal name": "CoeFun.noConfusion",
+        "Formal statement": "{α : Sort u} →\n  {γ : outParam (α → Sort v)} → {P : Sort u_1} → {v1 v2 : CoeFun α γ} → Eq v1 v2 → CoeFun.noConfusionType P v1 v2",
+        "Informal statement": "Given a type `α` with sort `u`, an out-parameter function `γ` from `α` to a sort `v`, and a sort `P` with sort `u_1`, the `CoeFun.noConfusion` function compares two instances `v1` and `v2` of `CoeFun α γ` for equality. If `v1` and `v2` are equal according to the `Eq` relation, it constructs a term of type `CoeFun.noConfusionType P v1 v2`, which resolves any potential confusion arising from their representation. This ensures that the coercion to function is well-behaved and does not lead to ambiguity in the type system.",
+        "Informal name": "No-Confusion for Coercion to Function"
+    },
+    "68": {
+        "Formal name": "CoeOut.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOut α β → Sort u_1} → (t : CoeOut α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeOut.casesOn` function is a case analysis principle for the `CoeOut` structure, which is used for defining coercions from left-to-right between types. Given a motive `motive` that depends on a `CoeOut` instance from `α` to `β`, and a function that constructs the motive from the coercion function `coe : α → β`, the `CoeOut.casesOn` function applies the motive to a `CoeOut` instance `t` from `α` to `β`.",
+        "Informal name": "Coercion Case Analysis from Left-to-Right"
+    },
+    "69": {
+        "Formal name": "CoeTC.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → Sort u_1 → CoeTC α β → CoeTC α β → Sort u_1",
+        "Informal statement": "The function `CoeTC.noConfusionType` is used to eliminate confusion between two instances of the `CoeTC` typeclass, which is used for defining coercions between different sorts. Given a source sort `α`, a target sort `β`, a sort `u_1` to which the result should belong, and two instances `t1` and `t2` of `CoeTC α β`, `CoeTC.noConfusionType` returns a sort `u_1` that can be used to compare or distinguish between the two instances.",
+        "Informal name": "Coercion Typeclass No-Confusion Function"
+    },
+    "70": {
+        "Formal name": "CoeHTCT.mk",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → (α → β) → CoeHTCT α β",
+        "Informal statement": "The `CoeHTCT.mk` function is a constructor for the `CoeHTCT` type class, which is used to define a chain of coercions between types `α` and `β`. It takes two types `α` and `β`, both of which are sorts from universes `u` and `v` respectively, and a function that maps elements from `α` to `β`. This function is then used to construct an instance of `CoeHTCT α β`, which represents a chain of coercions that can be used to automatically insert invisible functions to convert between types `α` and `β`.",
+        "Informal name": "Coercion Hierarchy Chain Constructor"
+    },
+    "71": {
+        "Formal name": "CoeOTC.mk",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → (α → β) → CoeOTC α β",
+        "Informal statement": "The `CoeOTC.mk` function is a constructor for the `CoeOTC` structure, which represents a coercion from a source type `α` of sort `u` to a target type `β` of sort `v`. It takes a function from `α` to `β` as an argument and returns an instance of `CoeOTC α β`.",
+        "Informal name": "Coercion Out and Coercion Constructor"
+    },
+    "72": {
+        "Formal name": "CoeTail.noConfusion",
+        "Formal statement": "{α : semiOutParam (Sort u)} →\n  {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeTail α β} → Eq v1 v2 → CoeTail.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeTail.noConfusion` function is used to eliminate confusion when comparing two instances of `CoeTail α β`. It takes a semi-out-parameter `α` of sort `u`, a sort `β`, a sort `u_1`, and two instances `v1` and `v2` of `CoeTail α β`. The function also takes a proof `Eq v1 v2` that the two instances are equal. It then applies the `CoeTail.noConfusionType` function to the proof and the two instances, returning a sort `u_1` that is the result of eliminating any confusion between the two instances of `CoeTail α β`.",
+        "Informal name": "No Confusion Elimination for Coercion Tail Instances"
+    },
+    "73": {
+        "Formal name": "CoeFun.rec",
+        "Formal statement": "{α : Sort u} →\n  {γ : α → Sort v} →\n    {motive : CoeFun α γ → Sort u_1} → ((coe : (f : α) → γ f) → motive { coe := coe }) → (t : CoeFun α γ) → motive t",
+        "Informal statement": "The `CoeFun.rec` function is a recursion principle for the `CoeFun` structure. Given a type `α` with sort `u`, a function `γ` from `α` to a sort `v`, and a motive `motive` from `CoeFun α γ` to a sort `u_1`, it allows you to define a function on `CoeFun α γ` by providing a function `coe` from `α` to `γ f` and a motive for `coe`. The function `CoeFun.rec` then returns the motive applied to `t : CoeFun α γ`.",
+        "Informal name": "Recursion for Coercion to Function"
+    },
+    "74": {
+        "Formal name": "CoeTail.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeTail α β → Sort u_1} → (t : CoeTail α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeTail.recOn` function is a recursion principle for the `CoeTail` structure, which is used for defining coercions that can only appear at the end of a sequence of coercions. Given a source sort `α`, a target sort `β`, and a motive function `motive` that maps an instance of `CoeTail α β` to a sort `u_1`, it allows you to define a function on an instance `t` of `CoeTail α β` by providing a coercion function `coe` from `α` to `β` and a motive for `coe`. The function `CoeTail.recOn` then returns the motive applied to `t`.",
+        "Informal name": "Recursion Principle for Coercion Tail Structure"
+    },
+    "75": {
+        "Formal name": "CoeFun.coe",
+        "Formal statement": "{α : Sort u} → {γ : outParam (α → Sort v)} → [self : CoeFun α γ] → (f : α) → γ f",
+        "Informal statement": "The `CoeFun.coe` function is a coercion that transforms an element `f` of type `α` into a function of type `γ f`, where `γ` is an out-parameter function type `α → Sort v`. This coercion is part of the `CoeFun` structure, which is used to enable the use of elements of type `α` in contexts that require a function type.",
+        "Informal name": "Function Coercion"
+    },
+    "76": {
+        "Formal name": "CoeDep.recOn",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} →\n      {motive : CoeDep α x β → Sort u_1} → (t : CoeDep α x β) → ((coe : β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeDep.recOn` function is a recursion principle for the `CoeDep` typeclass, which provides a way to define functions on the coerced type `β` based on the original type `α` and the specific value `x : α`. Given a motive `motive` that takes a `CoeDep α x β` instance and returns a sort `u_1`, and a function that constructs an element of the motive for a given coerced value `coe : β`, `CoeDep.recOn` applies this function to the `CoeDep` instance `t` to obtain an element of the motive for `t`. This function is particularly useful when the target type `β` depends on the value `x` of the source type `α`, allowing for dependent type-safe coercions.",
+        "Informal name": "Dependent Coercion Recursion Principle on Coerced Value"
+    },
+    "77": {
+        "Formal name": "CoeOut.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → Sort u_1 → CoeOut α β → CoeOut α β → Sort u_1",
+        "Informal statement": "The `CoeOut.noConfusionType` function is used to resolve potential confusion when comparing two `CoeOut` instances between types `α` and `β`. Given a source type `α` of sort `u`, a target type `β` of sort `v`, and a sort `u_1`, this function takes two `CoeOut` instances from `α` to `β` and returns a value of sort `u_1`. This function is particularly useful in situations where the coercion from `α` to `β` might lead to ambiguity or confusion, and it helps to clarify the intended coercion path.",
+        "Informal name": "Coercion Disambiguation Type for CoeOut Instances"
+    },
+    "78": {
+        "Formal name": "CoeHead.noConfusion",
+        "Formal statement": "{α : Sort u} →\n  {β : semiOutParam (Sort v)} → {P : Sort u_1} → {v1 v2 : CoeHead α β} → Eq v1 v2 → CoeHead.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeHead.noConfusion` function is used to resolve potential confusion when comparing two instances of `CoeHead α β`. Given a source type `α` of sort `u`, a target type `β` of sort `v`, a sort `u_1`, and two instances `v1` and `v2` of `CoeHead α β`, this function takes an equality proof `Eq v1 v2` and returns the result of `CoeHead.noConfusionType P v1 v2`. This function is particularly useful in situations where the coercion from `α` to `β` might lead to ambiguity or confusion, and it helps to clarify the intended coercion path.",
+        "Informal name": "Coercion Confusion Resolution for CoeHead Instances"
+    },
+    "79": {
+        "Formal name": "Coe.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : Coe α β → Sort u_1} → (t : Coe α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The function `Coe.recOn` provides a method to recursively define a motive function over an instance of `Coe α β` by applying a constructor function. Given a type `α` and a type `β`, a motive function `motive : Coe α β → Sort u_1`, and an instance `t : Coe α β`, `Coe.recOn` constructs the motive function by applying the constructor function `coe : α → β` and then applying the motive function to the resulting instance.",
+        "Informal name": "Recursive Coercion Motive Construction with Constructor"
+    },
+    "80": {
+        "Formal name": "CoeDep.noConfusion",
+        "Formal statement": "{α : Sort u} →\n  {x : α} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeDep α x β} → Eq v1 v2 → CoeDep.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeDep.noConfusion` function is used to resolve potential confusion between two `CoeDep` instances when they are equal. It takes a source type `α` of sort `u`, a value `x` of type `α`, a target type `β` of sort `v`, a type `P` of sort `u_1`, and two `CoeDep α x β` instances `v1` and `v2`. If `v1` and `v2` are equal according to the `Eq` relation, the function returns the result of applying `CoeDep.noConfusionType P` to `v1` and `v2`. This function is useful for ensuring that coercions are applied correctly and consistently, preventing type errors in the coercion system.",
+        "Informal name": "Dependent Coercion Confusion Resolution"
+    },
+    "81": {
+        "Formal name": "CoeSort.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : outParam (Sort v)} → Sort u_1 → CoeSort α β → CoeSort α β → Sort u_1",
+        "Informal statement": "The `CoeSort.noConfusionType` function is used to resolve potential confusion when dealing with multiple `CoeSort` instances from a source sort `α` to a target sort `β`. It takes as arguments the source sort `α`, the target sort `β`, a sort `u_1` for the result type, and two `CoeSort` instances from `α` to `β`. The function returns a sort `u_1` that can be used to discriminate between the two `CoeSort` instances, helping to avoid type errors in the coercion system.",
+        "Informal name": "Coercion Sort Confusion Resolution Type"
+    },
+    "82": {
+        "Formal name": "CoeT.mk",
+        "Formal statement": "{α : Sort u} → {x : α} → {β : Sort v} → β → CoeT α x β",
+        "Informal statement": "The `CoeT.mk` function is used to create an instance of the `CoeT` structure, which represents a coercion from an element `x : α` of type `α` to a type `β`. It takes as arguments the types `α` and `β`, an element `x` of type `α`, and an element of type `β`, and returns a `CoeT` instance that can be used to coerce `x` to type `β`. This function is part of the coercion system in Lean, which allows for the automatic insertion of coercions to resolve type errors.",
+        "Informal name": "Create Type Coercion Instance"
+    },
+    "83": {
+        "Formal name": "CoeOut.mk",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → (α → β) → CoeOut α β",
+        "Informal statement": "The `CoeOut.mk` function constructs a `CoeOut` instance for coercions applied from left-to-right between types. Given two types `α` and `β`, where `α` is of sort `u` and `β` is a semi-out parameter of sort `v`, it takes a function from `α` to `β` and returns a `CoeOut` instance for the coercion from `α` to `β`.",
+        "Informal name": "Construct Coercion from Left-to-Right"
+    },
+    "84": {
+        "Formal name": "CoeFun.recOn",
+        "Formal statement": "{α : Sort u} →\n  {γ : α → Sort v} →\n    {motive : CoeFun α γ → Sort u_1} → (t : CoeFun α γ) → ((coe : (f : α) → γ f) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeFun.recOn` function provides a recursion principle for the `CoeFun` structure, which is used for coercing elements of type `α` to functions. Given a type `α` with sort `u`, a function `γ` from `α` to a sort `v`, and a motive `motive` from `CoeFun α γ` to a sort `u_1`, it takes an instance `t` of `CoeFun α γ` and a function that constructs the motive from a function `coe` mapping elements of `α` to `γ f`. The function `CoeFun.recOn` then returns the motive applied to `t`.",
+        "Informal name": "Recursion for Coercion to Function with On-Motive"
+    },
+    "85": {
+        "Formal name": "CoeT.noConfusionType",
+        "Formal statement": "{α : Sort u} → {x : α} → {β : Sort v} → Sort u_1 → CoeT α x β → CoeT α x β → Sort u_1",
+        "Informal statement": "The `CoeT.noConfusionType` function is a type-level eliminator for the `CoeT` structure, which is used to define a function that takes two instances of the coercion chain `CoeT α x β` and a type `Sort u_1` and returns a type `Sort u_1`. This function is used to prevent type confusion when comparing two coercions that may have different intermediate steps but ultimately coerce to the same type `β`. The `CoeT.noConfusionType` function ensures that the comparison is done at the type level, disregarding the specific coercion paths taken by the two instances.",
+        "Informal name": "Type-Level Eliminator for Coercion Chain Comparison"
+    },
+    "86": {
+        "Formal name": "CoeSort.mk",
+        "Formal statement": "{α : Sort u} → {β : outParam (Sort v)} → (α → β) → CoeSort α β",
+        "Informal statement": "The `CoeSort.mk` structure defines a constructor for coercing from a sort `α` to another sort `β`. Given a function `(α → β)`, it constructs a `CoeSort α β` instance, which represents the coercion from `α` to `β`. This coercion is used when an element of type `α` is expected in a context where a type from sort `β` is required.",
+        "Informal name": "Constructor for Coercion to a Sort"
+    },
+    "87": {
+        "Formal name": "CoeTail.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeTail α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeTail α β) → motive t",
+        "Informal statement": "The `CoeTail.rec` function is a recursion principle for the `CoeTail` structure. It takes a source sort `α`, a target sort `β`, and a motive function `motive` that maps an instance of `CoeTail α β` to a sort `u_1`. The function also takes a proof that given a coercion function `coe` from `α` to `β`, the motive function can be applied to the instance with that coercion. It then applies this motive function to an instance `t` of `CoeTail α β` to return the result of the motive function for that instance.",
+        "Informal name": "Recursion Principle for Coercion Tail Structure"
+    },
+    "88": {
+        "Formal name": "CoeTail.coe",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → [self : CoeTail α β] → α → β",
+        "Informal statement": "The `CoeTail.coe` function is the core of the coercion mechanism for the `CoeTail` structure. It takes a semi-out-parameter `α` of sort `u`, a sort `β`, and an instance `self` of `CoeTail α β`. The function then coerces an element `x` of type `α` to an element of type `β` using the coercion defined by the `CoeTail` instance.",
+        "Informal name": "Tail Coercion Function"
+    },
+    "89": {
+        "Formal name": "CoeSort.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeSort α β → Sort u_1} → (t : CoeSort α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeSort.casesOn` function is a case analysis principle for the `CoeSort` structure, which is used for defining coercions from a source sort `α` to a target sort `β`. Given a motive `motive` that depends on a `CoeSort` instance from `α` to `β`, and a function that constructs the motive from the coercion function `coe : α → β`, the `CoeSort.casesOn` function applies the motive to a `CoeSort` instance `t` from `α` to `β`, using the provided coercion function to compute the result.",
+        "Informal name": "Coercion Sort Case Analysis"
+    },
+    "90": {
+        "Formal name": "CoeOut.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOut α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeOut α β) → motive t",
+        "Informal statement": "The `CoeOut.rec` function is a recursion principle for the `CoeOut` structure, which is used for defining coercions from left-to-right between types. Given a motive `motive` that depends on a `CoeOut` instance from `α` to `β`, and a function that constructs the motive from the coercion function `coe : α → β`, the `CoeOut.rec` function applies the motive to a `CoeOut` instance `t` from `α` to `β`.",
+        "Informal name": "Coercion Recursion from Left-to-Right"
+    },
+    "91": {
+        "Formal name": "CoeOut.coe",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → [self : CoeOut α β] → α → β",
+        "Informal statement": "The `CoeOut.coe` function is the core of the `CoeOut` coercion mechanism, which allows for the conversion of an element from type `α` to type `β`. It is defined for any two types `α` and `β` where `α` is of sort `u` and `β` is of sort `v`. The coercion is initiated by an instance of `CoeOut α β`, and the function `CoeOut.coe` then maps an element `x : α` to its corresponding element in `β`.",
+        "Informal name": "Left-to-Right Coercion Function"
+    },
+    "92": {
+        "Formal name": "CoeHTCT.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTCT α β → Sort u_1} → (t : CoeHTCT α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHTCT.recOn` function is a recursive function used to apply a motive function to a chain of coercions from the `CoeHTCT` structure. Given a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function that takes a `CoeHTCT` instance and returns a sort `u_1`, and a function that applies the motive to a coercion function `coe : α → β`, the `CoeHTCT.recOn` function applies the motive to a `CoeHTCT` instance `t`, effectively applying the motive to each coercion in the chain.",
+        "Informal name": "Recursive Application of Motive to Coercion Chain"
+    },
+    "93": {
+        "Formal name": "CoeOTC.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOTC α β → Sort u_1} → (t : CoeOTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeOTC.recOn` function is a recursive function that takes a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function `motive` that maps instances of `CoeOTC α β` to a sort `u_1`, and a function `coe` that maps elements of `α` to elements of `β`. It then applies this function to an instance `t` of `CoeOTC α β` to obtain the motive of `t`.",
+        "Informal name": "Recursive Function for Coercion Out and Coercion"
+    },
+    "94": {
+        "Formal name": "CoeHTC.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → Sort u_1 → CoeHTC α β → CoeHTC α β → Sort u_1",
+        "Informal statement": "The `CoeHTC.noConfusionType` function is a type-level function that takes a source sort `α` of universe `u`, a target sort `β` of universe `v`, a sort `u_1`, and two instances of `CoeHTC α β`, which represent the coercion hierarchy chain from `α` to `β`. The function is designed to eliminate potential confusion when comparing two instances of `CoeHTC α β` by returning a sort `u_1` that depends on the comparison of the two instances.",
+        "Informal name": "Coercion Hierarchy Chain Non-Confusion Type Function"
+    },
+    "95": {
+        "Formal name": "CoeTail.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeTail α β → Sort u_1} → (t : CoeTail α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeTail.casesOn` function is a case analysis principle for the `CoeTail` structure. It takes a source sort `α`, a target sort `β`, and a motive function `motive` that maps an instance of `CoeTail α β` to a sort `u_1`. The function then takes an instance `t` of `CoeTail α β` and a function that, given a coercion `coe` from `α` to `β`, applies the motive function to the instance with that coercion. The `CoeTail.casesOn` function applies this function to the given instance `t` to return the result of the motive function for that instance.",
+        "Informal name": "Case Analysis Principle for Coercion Tail Structure"
+    },
+    "96": {
+        "Formal name": "CoeHTC.coe",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → [self : CoeHTC α β] → α → β",
+        "Informal statement": "Given two sorts `α` and `β`, and an instance of `CoeHTC α β`, the `CoeHTC.coe` function provides a coercion from `α` to `β`. This function is part of the coercion system in Lean, which automatically inserts invisible functions to resolve type errors. The `CoeHTC` class is an auxiliary structure that chains together `CoeHead`, `CoeOut`, and `Coe` instances to facilitate coercion resolution.",
+        "Informal name": "Coercion Function for Coercion Hierarchy Chain"
+    },
+    "97": {
+        "Formal name": "CoeHTC.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTC α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeHTC α β) → motive t",
+        "Informal statement": "The `CoeHTC.rec` function is a recursive eliminator for the `CoeHTC` structure, which is used to facilitate the process of coercion resolution in Lean. It takes a motive function `motive` that maps an instance of `CoeHTC α β` to a sort `u_1`, and a constructor function `coe` that maps elements of type `α` to elements of type `β`. The `CoeHTC.rec` function applies the constructor function to the motive function and then applies the resulting function to an instance `t` of `CoeHTC α β`, returning the motive of `t`.",
+        "Informal name": "Coercion Hierarchy Chain Recursor"
+    },
+    "98": {
+        "Formal name": "CoeT.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} → {motive : CoeT α x β → Sort u_1} → (t : CoeT α x β) → ((coe : β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeT.casesOn` function is a case analysis eliminator for the `CoeT` structure, which is used to define functions that depend on the coercion chain `CoeT α x β`. Given a type `α`, an element `x : α`, and a target type `β`, the `CoeT.casesOn` function allows you to define a motive `motive : CoeT α x β → Sort u_1` that depends on the coercion from `α` to `β`. The motive is defined by providing a constructor that takes a value `coe : β` and returns an instance of the motive for the given coercion. The `CoeT.casesOn` function then applies this constructor to the coercion chain `t : CoeT α x β` to obtain the desired motive.",
+        "Informal name": "Case Analysis Eliminator for Type Coercion Chain"
+    },
+    "99": {
+        "Formal name": "CoeHead.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHead α β → Sort u_1} → (t : CoeHead α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHead.recOn` function is a recursion principle for the `CoeHead` structure, which is used for defining coercions applied at most once from left-to-right at the beginning of the coercion chain. It takes as arguments a sort `α`, a sort `β`, a motive function `motive` that takes a `CoeHead` instance and returns a sort `u_1`, a `CoeHead` instance `t`, and a function that maps a coercion `coe : α → β` to the motive applied to a `CoeHead` instance with `coe` as its coercion. It returns the result of applying the motive function to `t`.",
+        "Informal name": "CoeHead Recursion Principle on"
+    },
+    "100": {
+        "Formal name": "Coe.noConfusion",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : Coe α β} → Eq v1 v2 → Coe.noConfusionType P v1 v2",
+        "Informal statement": "The `Coe.noConfusion` function is used to compare two instances of `Coe α β` (coercions from a type `α` to a type `β`) and resolve any potential confusion between them. Given a source type `α` of sort `u`, a target type `β` of sort `v`, a comparison type `P` of sort `u_1`, and two instances `v1` and `v2` of `Coe α β`, the function takes a proof of their equality `Eq v1 v2` and returns a value of type `Coe.noConfusionType P v1 v2`, which represents the outcome of the comparison.",
+        "Informal name": "Coercion Confusion Resolution"
+    },
+    "101": {
+        "Formal name": "Coe.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : Coe α β → Sort u_1} → (t : Coe α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The function `Coe.casesOn` is used to define a motive function over an instance of `Coe α β` by pattern matching on the coercion instance `t`. Given a source type `α` and a target type `β`, a motive function `motive : Coe α β → Sort u_1`, and a constructor function `coe : α → β`, `Coe.casesOn` extracts the underlying constructor from the `Coe α β` instance `t` and applies it to the motive function to obtain the motive for `t`.",
+        "Informal name": "Pattern Matching on Coercion Instances"
+    },
+    "102": {
+        "Formal name": "CoeDep.mk",
+        "Formal statement": "{α : Sort u} → {x : α} → {β : Sort v} → β → CoeDep α x β",
+        "Informal statement": "The `CoeDep.mk` function constructs an instance of `CoeDep` for a given source type `α`, a specific value `x` of type `α`, a target type `β`, and an element of type `β`. It is used to create a dependent coercion where the target type `β` can depend on the value `x : α`. This is useful when the coercion function is dependent on the specific value being coerced, such as in the case of coercing a `Prop` to `Bool` only for `Decidable` propositions.",
+        "Informal name": "Construct Dependent Coercion Instance"
+    },
+    "103": {
+        "Formal name": "CoeTC.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : CoeTC α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeTC α β) → motive t",
+        "Informal statement": "The `CoeTC.rec` function is a recursive eliminator for the `CoeTC` typeclass, which is used for defining coercions between different sorts. It takes as arguments the source sort `α`, the target sort `β`, a motive function `motive` that maps an instance of `CoeTC α β` to a sort `u_1`, a function that constructs an element of `motive` from a coercion function `coe : α → β`, and an instance `t` of `CoeTC α β`. The function `CoeTC.rec` applies the given function to the coercion function of `t` and returns the result.",
+        "Informal name": "Coercion Typeclass Recursive Elimination"
+    },
+    "104": {
+        "Formal name": "CoeTC.coe",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → [self : CoeTC α β] → α → β",
+        "Informal statement": "The function `coe` is a coercion operation that takes an element `a` of type `α` and returns an element of type `β`, given an instance `self` of the `CoeTC` typeclass that defines the coercion from `α` to `β`.",
+        "Informal name": "Coercion Operation for `CoeTC` Typeclass"
+    },
+    "105": {
+        "Formal name": "CoeT.noConfusion",
+        "Formal statement": "{α : Sort u} → {x : α} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeT α x β} → Eq v1 v2 → CoeT.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeT.noConfusion` function is a proof-level eliminator for the `CoeT` structure, which is used to prevent type confusion when comparing two instances of the coercion chain `v1` and `v2` of type `CoeT α x β` that coerce from `α` to `β`. Given a type `P : Sort u_1`, the `CoeT.noConfusion` function takes a proof of equality `Eq v1 v2` between the two coercion instances and returns a proof that the two instances satisfy the `CoeT.noConfusionType P v1 v2` condition, ensuring that the comparison is valid and the coercions are equivalent.",
+        "Informal name": "Proof-Level Eliminator for Coercion Chain Comparison"
+    },
+    "106": {
+        "Formal name": "CoeTC.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : CoeTC α β → Sort u_1} → (t : CoeTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeTC.recOn` function is a recursive eliminator for the `CoeTC` typeclass, which is used for defining coercions between different sorts. It takes as arguments the source sort `α`, the target sort `β`, a motive function `motive` that maps an instance of `CoeTC α β` to a sort `u_1`, an instance `t` of `CoeTC α β`, and a function that constructs an element of `motive` from a coercion function `coe : α → β`. The function `CoeTC.recOn` applies the given function to the coercion function of `t` and returns the result.",
+        "Informal name": "Coercion Typeclass Recursive Elimination on Instance"
+    },
+    "107": {
+        "Formal name": "CoeHTC.mk",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → (α → β) → CoeHTC α β",
+        "Informal statement": "The `CoeHTC.mk` function is used to create an instance of the `CoeHTC` structure, which is part of the coercion system in Lean. It takes two types `α` and `β` from the universes `u` and `v` respectively, along with a function that coerces elements from type `α` to type `β`. This function is then used to define the coercion from `α` to `β` within the `CoeHTC` structure.",
+        "Informal name": "Coercion Hierarchy Chain Constructor"
+    },
+    "108": {
+        "Formal name": "CoeT.coe",
+        "Formal statement": "{α : Sort u} → (x : α) → {β : Sort v} → [self : CoeT α x β] → β",
+        "Informal statement": "Given an element `x` of type `α` and a target type `β`, the `CoeT.coe` function applies the coercion chain `CoeT α x β` to `x` to obtain an element of type `β`. This function is part of the coercion system in Lean, which automatically inserts invisible functions to fix type errors and allows for the seamless conversion between different types.",
+        "Informal name": "Coercion Application"
+    },
+    "109": {
+        "Formal name": "CoeTC.noConfusion",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeTC α β} → Eq v1 v2 → CoeTC.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeTC.noConfusion` function is used to eliminate confusion between two instances `v1` and `v2` of the `CoeTC` typeclass, which is used for defining coercions between different sorts. Given a source sort `α`, a target sort `β`, a predicate `P` of sort `u_1`, and a proof of equality `Eq v1 v2` between `v1` and `v2`, `CoeTC.noConfusion` applies the `CoeTC.noConfusionType` function to `P`, `v1`, and `v2` to return a value of sort `u_1` that can be used to compare or distinguish between the two instances.",
+        "Informal name": "Coercion Typeclass No-Confusion Elimination"
+    },
+    "110": {
+        "Formal name": "CoeHTC.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTC α β → Sort u_1} → (t : CoeHTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHTC.casesOn` function is a case analysis function for the `CoeHTC` structure, which is used to facilitate the process of coercion resolution in Lean. It takes a motive function `motive` that maps an instance of `CoeHTC α β` to a sort `u_1`, and a case analysis function `coe` that maps elements of type `α` to elements of type `β`. The `CoeHTC.casesOn` function applies the case analysis function to the motive function and then applies the resulting function to an instance `t` of `CoeHTC α β`, returning the motive of `t`.",
+        "Informal name": "Coercion Hierarchy Chain Case Analysis"
+    },
+    "111": {
+        "Formal name": "CoeT.rec",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} → {motive : CoeT α x β → Sort u_1} → ((coe : β) → motive { coe := coe }) → (t : CoeT α x β) → motive t",
+        "Informal statement": "The `CoeT.rec` function is a recursive eliminator for the `CoeT` structure, which is used to define functions that depend on the coercion chain `CoeT α x β`. Given a type `α`, an element `x : α`, and a target type `β`, the `CoeT.rec` function allows you to define a motive `motive : CoeT α x β → Sort u_1` that depends on the coercion from `α` to `β`. The motive is defined by providing a constructor that takes a value `coe : β` and returns an instance of the motive for the given coercion. The `CoeT.rec` function then applies this constructor to the coercion chain `t : CoeT α x β` to obtain the desired motive.",
+        "Informal name": "Recursive Eliminator for Type Coercion Chain"
+    },
+    "112": {
+        "Formal name": "CoeTail.noConfusionType",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → Sort u_1 → CoeTail α β → CoeTail α β → Sort u_1",
+        "Informal statement": "The `CoeTail.noConfusionType` function is used to eliminate confusion when comparing two instances of `CoeTail α β`. It takes a semi-out-parameter `α` of sort `u`, a sort `β`, a sort `u_1`, and two instances of `CoeTail α β`. The function returns a sort `u_1` that is the result of eliminating any confusion between the two instances of `CoeTail α β`.",
+        "Informal name": "No Confusion Elimination for Coercion Tail Instances"
+    },
+    "113": {
+        "Formal name": "CoeOTC.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOTC α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeOTC α β) → motive t",
+        "Informal statement": "The `CoeOTC.rec` function is a recursive function that takes a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function `motive` that maps instances of `CoeOTC α β` to a sort `u_1`, and a function `coe` that maps elements of `α` to elements of `β`. It then applies this function to an instance `t` of `CoeOTC α β` to obtain the motive of `t`.",
+        "Informal name": "Recursive Function for Coercion Out and Coercion"
+    },
+    "114": {
+        "Formal name": "CoeHTCT.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTCT α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeHTCT α β) → motive t",
+        "Informal statement": "The `CoeHTCT.rec` function is a recursive function used to apply a motive function to a chain of coercions from the `CoeHTCT` structure. Given a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function that takes a `CoeHTCT` instance and returns a sort `u_1`, and a function that applies the motive to a coercion function `coe : α → β`, the `CoeHTCT.rec` function applies the motive to a `CoeHTCT` instance `t`, effectively applying the motive to each coercion in the chain.",
+        "Informal name": "Recursive Application of Motive to Coercion Chain"
+    },
+    "115": {
+        "Formal name": "CoeHTCT.coe",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → [self : CoeHTCT α β] → α → β",
+        "Informal statement": "Given types α and β within their respective universes u and v, and an instance of the coercion hierarchy chain type class `CoeHTCT α β`, the function `CoeHTCT.coe` applies this instance to coerce an element of type α to an element of type β.",
+        "Informal name": "Coercion Function of Coercion Hierarchy Chain Type Class"
+    },
+    "116": {
+        "Formal name": "CoeDep.noConfusionType",
+        "Formal statement": "{α : Sort u} → {x : α} → {β : Sort v} → Sort u_1 → CoeDep α x β → CoeDep α x β → Sort u_1",
+        "Informal statement": "Given a source type `α` of sort `u`, a value `x` of type `α`, a target type `β` of sort `v`, and a sort `u_1`, the `CoeDep.noConfusionType` function is used to compare two instances of `CoeDep α x β` and return a value of type `u_1`. This function is typically used in situations where it is necessary to distinguish between different coercions or to handle cases where two coercions might be confused with each other.",
+        "Informal name": "No Confusion Type for Dependent Coercion"
+    },
+    "117": {
+        "Formal name": "CoeOTC.coe",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → [self : CoeOTC α β] → α → β",
+        "Informal statement": "The `CoeOTC.coe` function is a coercion function that takes a source type `α` of sort `u` and a target type `β` of sort `v`, along with an instance of `CoeOTC α β`, and maps an element `x` of type `α` to an element of type `β`. This function is used to implement the chaining of `CoeOut` and `Coe` instances in the coercion system, allowing for the automatic insertion of coercions to fix type errors.",
+        "Informal name": "Coercion Out and Coercion Function"
+    },
+    "118": {
+        "Formal name": "CoeSort.noConfusion",
+        "Formal statement": "{α : Sort u} →\n  {β : outParam (Sort v)} → {P : Sort u_1} → {v1 v2 : CoeSort α β} → Eq v1 v2 → CoeSort.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeSort.noConfusion` function is used to resolve potential confusion when dealing with multiple `CoeSort` instances from a source sort `α` to a target sort `β`. It takes as arguments the source sort `α`, the target sort `β`, a predicate `P` of sort `u_1`, and two `CoeSort` instances `v1` and `v2` from `α` to `β`. The function returns a proof that `v1` is equal to `v2`, using the `CoeSort.noConfusionType` function to compute the result, which helps to avoid type errors in the coercion system.",
+        "Informal name": "Coercion Sort Confusion Resolution"
+    },
+    "119": {
+        "Formal name": "CoeOut.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOut α β → Sort u_1} → (t : CoeOut α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeOut.recOn` function is a recursion principle for the `CoeOut` structure, which is used for defining coercions from left-to-right between types. Given a motive `motive` that depends on a `CoeOut` instance from `α` to `β`, and a function that constructs the motive from the coercion function `coe : α → β`, the `CoeOut.recOn` function applies the motive to a `CoeOut` instance `t` from `α` to `β`.",
+        "Informal name": "Coercion Recursion from Left-to-Right"
+    },
+    "120": {
+        "Formal name": "Coe.noConfusionType",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → Sort u_1 → Coe α β → Coe α β → Sort u_1",
+        "Informal statement": "The `Coe.noConfusionType` function is used to resolve potential confusion when comparing two instances of `Coe α β`, which represent coercions from a type `α` to a type `β`. Given a source type `α` of sort `u`, a target type `β` of sort `v`, and a type `Sort u_1` for the result of the comparison, the function takes two instances of `Coe α β` and returns a type `Sort u_1` that can be used to express the outcome of the comparison, such as whether the coercions are equivalent or not.",
+        "Informal name": "Coercion Confusion Resolution Type"
+    },
+    "121": {
+        "Formal name": "CoeFun.mk",
+        "Formal statement": "{α : Sort u} → {γ : outParam (α → Sort v)} → ((f : α) → γ f) → CoeFun α γ",
+        "Informal statement": "The `CoeFun.mk` function constructs an instance of the `CoeFun` structure, which provides a coercion from a type `α` to a function type `α → Sort v`. Given a type `α` of sort `u` and an out-parameter function type `γ` that maps elements of `α` to sorts of `v`, the function takes a mapping `f` from elements of `α` to their corresponding function types in `γ` and returns an instance of `CoeFun α γ`.",
+        "Informal name": "Construct Coercion to Function"
+    },
+    "122": {
+        "Formal name": "CoeSort.recOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeSort α β → Sort u_1} → (t : CoeSort α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeSort.recOn` function is a recursor for the `CoeSort` structure, which is used to coerce from one sort `α` to another sort `β`. It takes a motive function that maps a coercion from `α` to `β` to a sort `u_1`, and an instance `t` of `CoeSort α β`. The function applies the motive function to the coercion function `coe : α → β` and returns the result of the motive function applied to `t`.",
+        "Informal name": "Coercion Sort Recursor on Coercion"
+    },
+    "123": {
+        "Formal name": "CoeHTCT.noConfusion",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeHTCT α β} → Eq v1 v2 → CoeHTCT.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeHTCT.noConfusion` function is used to prevent confusion when comparing two coercion chain instances `v1` and `v2` of type `CoeHTCT α β`. It takes a source sort `α` of universe `u`, a target sort `β` of universe `v`, a sort `P` of universe `u_1`, and two instances of `CoeHTCT α β`. The function then takes a proof of equality `Eq v1 v2` and applies the `CoeHTCT.noConfusionType` function to the two instances, ensuring that the correct coercion chain is identified and used in the context.",
+        "Informal name": "Coercion Chain Confusion Prevention"
+    },
+    "124": {
+        "Formal name": "CoeSort.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeSort α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : CoeSort α β) → motive t",
+        "Informal statement": "Given a source sort `α` and a target sort `β`, the `CoeSort.rec` function applies a motive function to a coercion from `α` to `β`. The motive function takes the coercion function `coe : α → β` as an argument and returns a sort `u_1`. The `CoeSort.rec` function then applies the motive function to the coercion `t : CoeSort α β` and returns the result.",
+        "Informal name": "Coercion Sort Recursor"
+    },
+    "125": {
+        "Formal name": "CoeOTC.noConfusion",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeOTC α β} → Eq v1 v2 → CoeOTC.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeOTC.noConfusion` function is a proof-level operation that helps to resolve potential confusion between different instances of the `CoeOTC` structure. Given a source sort `α` of universe `u`, a target sort `β` of universe `v`, a predicate `P` of sort `u_1`, and two instances `v1` and `v2` of `CoeOTC α β`, it takes a proof that `v1` and `v2` are equal and returns the result of the `CoeOTC.noConfusionType` operation applied to `P` and the two instances. This function is used to provide a proof that two instances of coercion are indeed the same, which is necessary for the coercion system to function correctly without ambiguity.",
+        "Informal name": "Proof of Coercion Instance Equality"
+    },
+    "126": {
+        "Formal name": "CoeSort.coe",
+        "Formal statement": "{α : Sort u} → {β : outParam (Sort v)} → [self : CoeSort α β] → α → β",
+        "Informal statement": "The `CoeSort.coe` function is the core of the coercion mechanism for converting an element of type `α` to an element of type `β`, where `α` is a sort and `β` is an out-parameter sort. This coercion is enabled by the presence of a `CoeSort` instance between `α` and `β`. The function takes an element of type `α` and returns an element of type `β`, effectively allowing elements of `α` to be used in contexts where `β` is expected.",
+        "Informal name": "Coercion Function for Sorts"
+    },
+    "127": {
+        "Formal name": "CoeTail.mk",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → (α → β) → CoeTail α β",
+        "Informal statement": "The `CoeTail.mk` function takes a semi-out-parameter `α` of sort `u`, a sort `β`, and a function from `α` to `β`. It constructs a `CoeTail` instance for `α` and `β` using the provided function. This is used to define a coercion that can only appear at the end of a sequence of coercions, where the source type `α` can be further coerced via `Coe σ α` and `CoeHead τ σ` instances, but the target type `β` will only be the expected type of the expression.",
+        "Informal name": "Coercion Tail Constructor"
+    },
+    "128": {
+        "Formal name": "CoeHTCT.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHTCT α β → Sort u_1} → (t : CoeHTCT α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHTCT.casesOn` function is a case analysis function for coercion chains in the `CoeHTCT` structure. It takes a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function that maps a `CoeHTCT` instance to a sort `u_1`, and a `CoeHTCT` instance `t`. The function also takes a function that applies the motive to a coercion function `coe : α → β`. The `CoeHTCT.casesOn` function applies the motive to the `CoeHTCT` instance `t`, effectively analyzing each coercion in the chain and applying the motive accordingly.",
+        "Informal name": "Case Analysis for Coercion Hierarchy Chain"
+    },
+    "129": {
+        "Formal name": "CoeOTC.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeOTC α β → Sort u_1} → (t : CoeOTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeOTC.casesOn` function is a case analysis function for the `CoeOTC` structure. It takes a source type `α` of sort `u`, a target type `β` of sort `v`, a motive function `motive` that maps instances of `CoeOTC α β` to a sort `u_1`, and an instance `t` of `CoeOTC α β`. The function then applies a given function `coe` that maps elements of `α` to elements of `β` to the motive function, and returns the motive of `t`.",
+        "Informal name": "Case Analysis for Coercion Out and Coercion Structure"
+    },
+    "130": {
+        "Formal name": "Coe.mk",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → (α → β) → Coe α β",
+        "Informal statement": "The `Coe.mk` function is used to create an instance of the `Coe` structure, which represents a coercion from a type `α` to a type `β`. Given a function `f : α → β`, `Coe.mk f` constructs an instance of `Coe α β` that can be used to automatically convert elements of type `α` to type `β` when needed.",
+        "Informal name": "Constructor for Coercion Typeclass"
+    },
+    "131": {
+        "Formal name": "CoeDep.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} →\n      {motive : CoeDep α x β → Sort u_1} → (t : CoeDep α x β) → ((coe : β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeDep.casesOn` function is a case analysis principle for the `CoeDep` typeclass, which provides a way to analyze the structure of a `CoeDep α x β` instance and extract information about the coerced value `coe : β`. Given a motive `motive` that takes a `CoeDep α x β` instance and returns a sort `u_1`, and a function that constructs an element of the motive for a given coerced value `coe : β`, `CoeDep.casesOn` applies this function to the coerced value of the `CoeDep` instance `t` to obtain an element of the motive for `t`.",
+        "Informal name": "Dependent Coercion Case Analysis Principle"
+    },
+    "132": {
+        "Formal name": "CoeFun.noConfusionType",
+        "Formal statement": "{α : Sort u} → {γ : outParam (α → Sort v)} → Sort u_1 → CoeFun α γ → CoeFun α γ → Sort u_1",
+        "Informal statement": "The `CoeFun.noConfusionType` function provides a mechanism to compare two instances of `CoeFun α γ` for equality and resolve any potential confusion arising from their representation. Given a type `α` with sort `u`, an out-parameter function `γ` from `α` to a sort `v`, and a sort `u_1`, it constructs a sort `u_1` that represents the comparison result of two `CoeFun α γ` instances. This allows for the definition of equality and no-confusion axioms for the `CoeFun` structure, ensuring that the coercion to function is well-behaved and does not lead to ambiguity in the type system.",
+        "Informal name": "No-Confusion Type for Coercion to Function"
+    },
+    "133": {
+        "Formal name": "CoeT.recOn",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} → {motive : CoeT α x β → Sort u_1} → (t : CoeT α x β) → ((coe : β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeT.recOn` function is a variant of the `CoeT.rec` function, which is used to define functions that depend on the coercion chain `CoeT α x β`. Given a type `α`, an element `x : α`, and a target type `β`, the `CoeT.recOn` function allows you to define a motive `motive : CoeT α x β → Sort u_1` that depends on the coercion from `α` to `β`. The motive is defined by providing a constructor that takes a value `coe : β` and returns an instance of the motive for the given coercion. The `CoeT.recOn` function then applies this constructor to the coercion chain `t : CoeT α x β` to obtain the desired motive. This variant is specifically tailored for use with the `recOn` pattern, which is often used in inductive type definitions and proofs by induction.",
+        "Informal name": "Recursive Eliminator for Type Coercion Chain (Variant)"
+    },
+    "134": {
+        "Formal name": "CoeHead.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} →\n    {motive : CoeHead α β → Sort u_1} → (t : CoeHead α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The `CoeHead.casesOn` function provides a case analysis principle for the `CoeHead` structure. It takes as arguments a sort `α`, a sort `β`, a motive function `motive` that takes a `CoeHead` instance and returns a sort `u_1`, a `CoeHead` instance `t`, and a function that maps a coercion `coe : α → β` to the motive applied to a `CoeHead` instance with `coe` as its coercion. It returns the result of applying the motive function to `t`.",
+        "Informal name": "CoeHead Case Analysis Principle"
+    },
+    "135": {
+        "Formal name": "CoeHead.mk",
+        "Formal statement": "{α : Sort u} → {β : semiOutParam (Sort v)} → (α → β) → CoeHead α β",
+        "Informal statement": "The `CoeHead.mk` function constructs an instance of the `CoeHead` structure, which is used to define a coercion from type `α` to type `β`. It takes three arguments: a sort `α`, a semi-out-parameter sort `β`, and a function from `α` to `β`, and it returns an instance of `CoeHead α β`.",
+        "Informal name": "Constructor for Single-use Left-to-right Coercion Structure"
+    },
+    "136": {
+        "Formal name": "Coe.rec",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : Coe α β → Sort u_1} → ((coe : α → β) → motive { coe := coe }) → (t : Coe α β) → motive t",
+        "Informal statement": "The function `Coe.rec` provides a method to recursively define a motive function over an instance of `Coe α β`. Given a type `α` and a type `β`, a motive function `motive : Coe α β → Sort u_1`, and a constructor function `coe : α → β`, `Coe.rec` constructs a motive function for a specific `Coe α β` instance `t`.",
+        "Informal name": "Recursive Coercion Motive Construction"
+    },
+    "137": {
+        "Formal name": "CoeTC.casesOn",
+        "Formal statement": "{α : Sort u} →\n  {β : Sort v} → {motive : CoeTC α β → Sort u_1} → (t : CoeTC α β) → ((coe : α → β) → motive { coe := coe }) → motive t",
+        "Informal statement": "The function `CoeTC.casesOn` is a case analysis function for the `CoeTC` typeclass, which is used for defining coercions between different sorts. Given a source sort `α`, a target sort `β`, a motive function `motive` that maps an instance of `CoeTC α β` to a sort `u_1`, and an instance `t` of `CoeTC α β`, `CoeTC.casesOn` applies a given function that constructs an element of `motive` from a coercion function `coe : α → β` to the coercion function of `t` and returns the result.",
+        "Informal name": "Coercion Typeclass Case Analysis"
+    },
+    "138": {
+        "Formal name": "CoeHTC.noConfusion",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → {P : Sort u_1} → {v1 v2 : CoeHTC α β} → Eq v1 v2 → CoeHTC.noConfusionType P v1 v2",
+        "Informal statement": "The `CoeHTC.noConfusion` function is a proof-level function that takes a source sort `α` of universe `u`, a target sort `β` of universe `v`, a sort `P` of universe `u_1`, and two instances `v1` and `v2` of `CoeHTC α β`, which represent the coercion hierarchy chain from `α` to `β`. The function is designed to eliminate potential confusion when comparing two instances of `CoeHTC α β` by taking a proof of their equality `Eq v1 v2` and returning the result of applying the `CoeHTC.noConfusionType` function to `P`, `v1`, and `v2`.",
+        "Informal name": "Coercion Hierarchy Chain Non-Confusion Proof Function"
+    },
+    "139": {
+        "Formal name": "Coe.coe",
+        "Formal statement": "{α : semiOutParam (Sort u)} → {β : Sort v} → [self : Coe α β] → α → β",
+        "Informal statement": "The `Coe.coe` function is the core of the coercion mechanism in Lean. It takes an element `x` of type `α` and, given an instance of `Coe α β`, returns an element of type `β`. This function is used to automatically convert values between types when there is a defined coercion between them, allowing for seamless type conversions without explicit user intervention.",
+        "Informal name": "Coercion Function"
+    },
+    "140": {
+        "Formal name": "CoeHTCT.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → Sort u_1 → CoeHTCT α β → CoeHTCT α β → Sort u_1",
+        "Informal statement": "The `CoeHTCT.noConfusionType` function provides a mechanism to avoid confusion when dealing with coercion chains in the `CoeHTCT` structure. It takes four arguments: a source sort `α` of universe `u`, a target sort `β` of universe `v`, a sort `u_1`, and two instances of `CoeHTCT α β`. The function returns a sort `u_1` that is used to distinguish between the two coercion instances, ensuring that the correct coercion is applied in a given context.",
+        "Informal name": "Coercion Chain Confusion Avoidance"
+    },
+    "141": {
+        "Formal name": "CoeTC.mk",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → (α → β) → CoeTC α β",
+        "Informal statement": "The `CoeTC.mk` function is used to create an instance of the `CoeTC` typeclass, which is a mechanism for defining coercions between different sorts. It takes three arguments: a source sort `α`, a target sort `β`, and a function `f` that maps elements from `α` to `β`. This instance is then used by Lean's coercion system to automatically insert invisible functions to fix type errors.",
+        "Informal name": "Create Coercion Typeclass Instance"
+    },
+    "142": {
+        "Formal name": "CoeOTC.noConfusionType",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → Sort u_1 → CoeOTC α β → CoeOTC α β → Sort u_1",
+        "Informal statement": "The `CoeOTC.noConfusionType` function is a type-level operation that helps to resolve potential confusion between different instances of the `CoeOTC` structure. Given a source sort `α` of universe `u`, a target sort `β` of universe `v`, a result sort `u_1`, and two instances of `CoeOTC α β`, it returns the sort `u_1` that can be used to distinguish between the two instances. This is particularly useful in situations where the coercion system needs to disambiguate between multiple possible coercions.",
+        "Informal name": "Disambiguation for Coercion Out and Coercion Instances"
+    },
+    "143": {
+        "Formal name": "CoeDep.coe",
+        "Formal statement": "{α : Sort u} → (x : α) → {β : Sort v} → [self : CoeDep α x β] → β",
+        "Informal statement": "The `CoeDep.coe` function is the core operation of the `CoeDep` typeclass, which represents a dependent coercion. Given a source type `α` of sort `u`, a value `x` of type `α`, a target type `β` of sort `v`, and an instance `self` of `CoeDep α x β`, the `CoeDep.coe` function coerces the value `x` to the type `β`.",
+        "Informal name": "Dependent Coercion Operation"
+    },
+    "144": {
+        "Formal name": "CoeDep.rec",
+        "Formal statement": "{α : Sort u} →\n  {x : α} →\n    {β : Sort v} →\n      {motive : CoeDep α x β → Sort u_1} → ((coe : β) → motive { coe := coe }) → (t : CoeDep α x β) → motive t",
+        "Informal statement": "The `CoeDep.rec` function is a recursion principle for the `CoeDep` typeclass, which provides a way to define functions on the coerced type `β` based on the original type `α` and the specific value `x : α`. Given a motive `motive` that takes a `CoeDep α x β` instance and returns a sort `u_1`, and a function that constructs an element of the motive for a given coerced value `coe : β`, `CoeDep.rec` applies this function to the `CoeDep` instance `t` to obtain an element of the motive for `t`.",
+        "Informal name": "Dependent Coercion Recursion Principle"
+    },
+    "145": {
+        "Formal name": "IO.Channel.State",
+        "Formal statement": "Type → Type",
+        "Informal statement": "The `IO.Channel.State` structure represents the internal state of a channel, which is a type that depends on another type `a`. It maintains the invariant that at any given time, either the `consumers` or `values` field is empty.",
+        "Informal name": "Channel Internal State"
+    },
+    "146": {
+        "Formal name": "IO.Channel.instInhabitedState",
+        "Formal statement": "{a : Type} → Inhabited (Channel.State a)",
+        "Informal statement": "For any type \\( a \\), the internal state of an IO channel, represented by the `Channel.State a` structure, is inhabited. This means that there exists a default element within the `Channel.State a` structure, ensuring that it is not empty and has a designated default value.",
+        "Informal name": "Inhabited Internal State of IO Channel"
+    },
+    "147": {
+        "Formal name": "IO.Channel",
+        "Formal statement": "Type → Type:= Mutex (Channel.State α)",
+        "Informal statement": "The `IO.Channel` is a type that constructs a channel for a given type `α`, which is a First-In-First-Out (FIFO) queue with an unbounded buffer. It is implemented as a mutual exclusion (Mutex) structure around the `Channel.State α` to ensure thread safety. The channel supports operations like `send` and `recv?`, where `recv?` returns a `Task`. A channel can be closed, and once closed, all subsequent `send` operations are ignored. When the queue is empty and the channel is closed, `recv?` returns `none`.",
+        "Informal name": "FIFO Unbounded Buffer Channel"
+    },
+    "148": {
+        "Formal name": "IO.instNonemptyChannel",
+        "Formal statement": "∀ {α : Type}, Nonempty (Channel α)",
+        "Informal statement": "For any type \\( \\alpha \\), the channel type \\( \\text{Channel} \\, \\alpha \\) is non-empty, meaning there exists at least one element within the channel. This is a proposition asserting the existence of such an element without providing an actual instance of the channel.",
+        "Informal name": "Non-emptiness of Channel Types"
+    },
+    "149": {
+        "Formal name": "IO.Channel.new",
+        "Formal statement": "{α : Type} → BaseIO (Channel α):=\n  Mutex.new {}",
+        "Informal statement": "The function `IO.Channel.new` creates a new `Channel` of type `α` as an `BaseIO` operation. It is implemented by creating a new empty mutex using `Mutex.new {}`.",
+        "Informal name": "Create New Channel"
+    },
+    "150": {
+        "Formal name": "IO.Channel.send",
+        "Formal statement": "{α : Type} → α → Channel α → BaseIO Unit:=\n  ch.atomically do\n    let st ← get\n    if st.closed then return\n    if let some (consumer, consumers) := st.consumers.dequeue? then\n      consumer.resolve (some v)\n      set { st with consumers }\n    else\n      set { st with values := st.values.enqueue v }",
+        "Informal statement": "The function `IO.Channel.send` takes a type `α`, a value `v` of that type, and a channel `ch` of type `Channel α`. It atomically executes an action that sends the value `v` on the channel without blocking. If the channel is closed, the function immediately returns. Otherwise, it checks if there is a consumer waiting for a message. If a consumer is found, the message `v` is delivered to the consumer, and the channel state is updated to reflect the removal of the consumer. If no consumer is waiting, the message `v` is enqueued to the channel's value queue, and the channel state is updated accordingly.",
+        "Informal name": "Non-blocking Message Send on Channel"
+    },
+    "151": {
+        "Formal name": "IO.Channel.close",
+        "Formal statement": "{α : Type} → Channel α → BaseIO Unit:=\n  ch.atomically do\n    let st ← get\n    for consumer in st.consumers.toArray do consumer.resolve none\n    set { st with closed := true, consumers := ∅ }",
+        "Informal statement": "The function `IO.Channel.close` is an atomic operation on a channel `ch` of type `α` that closes the channel. It atomically retrieves the current state of the channel, then iterates over all consumers in the channel's consumer queue, resolving each promise with `None` to indicate that the channel is closed. Finally, it updates the channel state to reflect that the channel is closed and the consumer queue is empty.",
+        "Informal name": "Close Channel Operation"
+    },
+    "152": {
+        "Formal name": "IO.Channel.recv?",
+        "Formal statement": "{α : Type} → Channel α → BaseIO (Task (Option α)):=\n  ch.atomically do\n    let st ← get\n    if let some (a, values) := st.values.dequeue? then\n      set { st with values }\n      return .pure a\n    else if !st.closed then\n      let promise ← Promise.new\n      set { st with consumers := st.consumers.enqueue promise }\n      return promise.result\n    else\n      return .pure none",
+        "Informal statement": "The function `IO.Channel.recv?` is an atomic operation on a channel `ch` of type `α` that attempts to receive a message without blocking. It returns a `Task` that resolves to an `Option α`. If there is a message available in the channel's value queue, it dequeues the message and returns it as `Some a`. If no message is available and the channel is not closed, it creates a new promise, enqueues it into the consumers queue, and returns the promise's result task. If the channel is closed and the value queue is empty, it returns a task that resolves to `None`.",
+        "Informal name": "Non-blocking Message Reception on a Channel"
+    },
+    "153": {
+        "Formal name": "IO.Channel.recvAllCurrent",
+        "Formal statement": "{α : Type} → Channel α → BaseIO (Array α):=\n  ch.atomically do\n    modifyGet fun st => (st.values.toArray, { st with values := ∅ })",
+        "Informal statement": "The function `IO.Channel.recvAllCurrent` takes a type `α` and a channel `ch` of type `Channel α` and returns an action in the `BaseIO` monad that atomically dequeues all currently queued messages from the channel and returns them as an array of type `Array α`. The function `modifyGet` is used to modify the channel state `st` by converting the queue of values to an array and updating the state with an empty queue of values.",
+        "Informal name": "Dequeue and Return All Current Messages as Array"
+    },
+    "154": {
+        "Formal name": "IO.Channel.Sync",
+        "Formal statement": "Type → Type:= Channel",
+        "Informal statement": "The `IO.Channel.Sync` type is a constructor that takes a type `α` and returns a type representing a synchronous (blocking) version of a `Channel` for that type. This synchronous channel enables blocking operations such as receiving messages and allows for synchronous iteration within dedicated threads.",
+        "Informal name": "Synchronous Channel"
+    },
+    "155": {
+        "Formal name": "IO.Channel.sync",
+        "Formal statement": "{α : Type} → Channel α → Channel.Sync α:= ch",
+        "Informal statement": "The function `IO.Channel.sync` takes a type `α` and a channel `ch` of type `Channel α` and returns a synchronous (blocking) version of the channel, denoted as `Channel.Sync α`. This synchronous channel allows for blocking operations such as `ch.sync.recv?` which waits for the next message to arrive, and synchronous iteration `for msg in ch.sync do ...`. These operations should be used within dedicated threads.",
+        "Informal name": "Synchronous Channel"
+    },
+    "156": {
+        "Formal name": "IO.Channel.Sync.recv?",
+        "Formal statement": "{α : Type} → Channel.Sync α → BaseIO (Option α):= do\n  IO.wait (← Channel.recv? ch)",
+        "Informal statement": "The function `IO.Channel.Sync.recv?` takes a type `α` and a synchronous channel `ch` of type `Channel.Sync α`. It performs an asynchronous operation that waits for the next message to be available in the channel. If a message is received, it returns `some a` where `a : α`. If the channel is closed and no message is available, it returns `none`. This operation blocks the execution until a message is received or the channel is closed.",
+        "Informal name": "Synchronous Message Reception on a Channel"
+    },
+    "157": {
+        "Formal name": "IO.instForInSync",
+        "Formal statement": "{m : Type → Type u_1} → {α : Type} → [inst : MonadLiftT BaseIO m] → ForIn m (Channel.Sync α) α",
+        "Informal statement": "For any monad `m` and type `α`, the instance `IO.instForInSync` provides the ability to iterate synchronously over a `Channel.Sync α` within the monadic context of `m`, while allowing the lifting of computations from `m` to `BaseIO` using the `MonadLiftT` structure. This enables the blocking reception of messages in the channel until it is closed.",
+        "Informal name": "Synchronous Iteration over Channel with MonadLiftT"
+    },
+    "158": {
+        "Formal name": "IO.Channel.State.casesOn",
+        "Formal statement": "{α : Type} →\n  {motive : Channel.State α → Sort u} →\n    (t : Channel.State α) →\n      ((values : Std.Queue α) →\n          (consumers : Std.Queue (Promise (Option α))) →\n            (closed : Bool) → motive { values := values, consumers := consumers, closed := closed }) →\n        motive t",
+        "Informal statement": "The function `IO.Channel.State.casesOn` is a case analysis principle for the `Channel.State α` type. It takes a type `α`, a motive function `motive` that maps a `Channel.State α` to a sort `u`, and a function that defines the motive for a `Channel.State α` with given `values`, `consumers`, and `closed` fields. It then applies this motive function to a `Channel.State α` `t`.",
+        "Informal name": "Case analysis principle for Channel.State"
+    },
+    "159": {
+        "Formal name": "IO.Channel.recv?.proof_1",
+        "Formal statement": "∀ {α : Type}, Nonempty (Option α)",
+        "Informal statement": "For any type \\( \\alpha \\), the `Option α` type, which represents values that can either be `some a` for some `a : α`, or `none`, is non-empty. This means that there exists at least one element in the `Option α` type, ensuring that it is not empty.",
+        "Informal name": "Non-emptiness of Option Type"
+    },
+    "160": {
+        "Formal name": "IO.Channel.State.closed",
+        "Formal statement": "{α : Type} → Channel.State α → Bool",
+        "Informal statement": "The function `closed` takes a type `α` and a state of a channel of type `Channel.State α` and returns a boolean value indicating whether the channel is closed.",
+        "Informal name": "Channel Closed Indicator"
+    },
+    "161": {
+        "Formal name": "IO.Channel.forAsync",
+        "Formal statement": "{α : Type} → (α → BaseIO Unit) → Channel α → optParam Task.Priority Task.Priority.default → BaseIO (Task Unit)",
+        "Informal statement": "The function `ch.forAsync f` is defined to asynchronously process each message received on the channel `ch` by applying the function `f` to it. If no more messages are available (`ch.recv?` returns `none`), the function returns a task that completes with a unit value. If a message is available (`ch.recv?` returns `some v`), the function `f` is applied to the message `v`, and the process is recursively called on the channel `ch` with the function `f` and the given priority `prio`. If the function is called multiple times, each instance of `forAsync` will only process a portion of the messages.",
+        "Informal name": "Asynchronous Message Processing on a Channel"
+    },
+    "162": {
+        "Formal name": "IO.Channel.State.noConfusionType",
+        "Formal statement": "{α : Type} → Sort u → Channel.State α → Channel.State α → Sort u",
+        "Informal statement": "The function `IO.Channel.State.noConfusionType` takes a type `α`, a sort `u`, and two states of a channel of type `Channel.State α`. It returns a sort `u` that can be used to express the non-confusion property of the channel states, ensuring that distinct channel states do not mistakenly collapse into the same state.",
+        "Informal name": "Non-Confusion Property for Channel States"
+    },
+    "163": {
+        "Formal name": "IO.Channel.State.mk",
+        "Formal statement": "{α : Type} → Std.Queue α → Std.Queue (Promise (Option α)) → Bool → Channel.State α",
+        "Informal statement": "The function `IO.Channel.State.mk` constructs a `Channel.State` of type `α` from a queue of type `α`, a queue of promises of optional type `α`, and a boolean value. The resulting `Channel.State` encapsulates the state of a channel in an IO system, where `α` represents the type of data that can be transmitted over the channel.",
+        "Informal name": "Construct Channel State"
+    },
+    "164": {
+        "Formal name": "IO.Channel.State.consumers",
+        "Formal statement": "{α : Type} → Channel.State α → Std.Queue (Promise (Option α))",
+        "Informal statement": "The function `consumers` takes a type `α` and a channel state `Channel.State α` and returns the queue of promises that hold optional values of type `α`.",
+        "Informal name": "Consumers Queue of a Channel State"
+    },
+    "165": {
+        "Formal name": "IO.Channel.State.rec",
+        "Formal statement": "{α : Type} →\n  {motive : Channel.State α → Sort u} →\n    ((values : Std.Queue α) →\n        (consumers : Std.Queue (Promise (Option α))) →\n          (closed : Bool) → motive { values := values, consumers := consumers, closed := closed }) →\n      (t : Channel.State α) → motive t",
+        "Informal statement": "The function `IO.Channel.State.rec` is a recursion principle for the `Channel.State α` type. It takes a type `α`, a motive function `motive` that maps a `Channel.State α` to a sort `u`, and a function that defines the motive for a `Channel.State α` with given `values`, `consumers`, and `closed` fields. It then applies this motive function to a `Channel.State α` `t`.",
+        "Informal name": "Recursion principle for Channel.State"
+    },
+    "166": {
+        "Formal name": "IO.Channel.State.mk.inj",
+        "Formal statement": "∀ {α : Type} {values : Std.Queue α} {consumers : Std.Queue (Promise (Option α))} {closed : Bool}\n  {values_1 : Std.Queue α} {consumers_1 : Std.Queue (Promise (Option α))} {closed_1 : Bool},\n  { values := values, consumers := consumers, closed := closed } =\n      { values := values_1, consumers := consumers_1, closed := closed_1 } →\n    values = values_1 ∧ consumers = consumers_1 ∧ closed = closed_1",
+        "Informal statement": "For any type α, queues of values and consumers of type α and promises of optional type α, and boolean values closed and closed_1, if two channel states constructed with these values are equal, then the queues of values, consumers, and the boolean values must also be equal. In other words, the equality of channel states implies the equality of their constituent parts: the queues of values, consumers, and the closed status.",
+        "Informal name": "Equality of Channel States Implies Equality of Constituents"
+    },
+    "167": {
+        "Formal name": "IO.Channel.State.mk.sizeOf_spec",
+        "Formal statement": "∀ {α : Type} [inst : SizeOf α] (values : Std.Queue α) (consumers : Std.Queue (Promise (Option α))) (closed : Bool),\n  sizeOf { values := values, consumers := consumers, closed := closed } =\n    1 + sizeOf values + sizeOf consumers + sizeOf closed",
+        "Informal statement": "For any type \\( \\alpha \\) with an instance of `SizeOf` that provides a size function, given a queue of values \\( values \\) of type \\( \\alpha \\), a queue of consumers \\( consumers \\) of type \\( Promise (Option \\alpha) \\), and a boolean value \\( closed \\), the size of the channel state constructed by \\( IO.Channel.State.mk \\) is equal to 1 plus the sum of the sizes of the values queue, the consumers queue, and the closed boolean. This theorem specifies how the size of a channel state is computed in terms of the sizes of its constituent parts.",
+        "Informal name": "Size Computation for Channel State Construction"
+    },
+    "168": {
+        "Formal name": "IO.Channel.State.mk.injEq",
+        "Formal statement": "∀ {α : Type} (values : Std.Queue α) (consumers : Std.Queue (Promise (Option α))) (closed : Bool)\n  (values_1 : Std.Queue α) (consumers_1 : Std.Queue (Promise (Option α))) (closed_1 : Bool),\n  ({ values := values, consumers := consumers, closed := closed } =\n      { values := values_1, consumers := consumers_1, closed := closed_1 }) =\n    (values = values_1 ∧ consumers = consumers_1 ∧ closed = closed_1)",
+        "Informal statement": "For any type \\( \\alpha \\), given two sets of values \\( values \\), \\( values\\_1 \\) of type \\( Std.Queue \\alpha \\), two sets of consumers \\( consumers \\), \\( consumers\\_1 \\) of type \\( Std.Queue (Promise (Option \\alpha)) \\), and two boolean values \\( closed \\), \\( closed\\_1 \\), the equality of two channel states constructed by \\( IO.Channel.State.mk \\) is equivalent to the pairwise equality of their respective values, consumers, and closed status. In other words, if the channel states are equal, then their values, consumers, and closed status must also be equal, and vice versa.",
+        "Informal name": "Equality of Channel States via Component Equality"
+    },
+    "169": {
+        "Formal name": "IO.Channel.State.values",
+        "Formal statement": "{α : Type} → Channel.State α → Std.Queue α",
+        "Informal statement": "The function `values` is a projection from the `Channel.State α` structure to its `Std.Queue α` field, where `α` is a type parameter. It retrieves the queue of values from the state of a channel.",
+        "Informal name": "Value Queue Projection"
+    },
+    "170": {
+        "Formal name": "IO.Channel.State.noConfusion",
+        "Formal statement": "{α : Type} → {P : Sort u} → {v1 v2 : Channel.State α} → v1 = v2 → Channel.State.noConfusionType P v1 v2",
+        "Informal statement": "The function `IO.Channel.State.noConfusion` is a proof principle that ensures distinct channel states do not collapse into the same state. It takes a type `α`, a sort `P`, and two channel states `v1` and `v2` of type `Channel.State α`. It requires a proof that `v1` is equal to `v2`, and then it constructs a proof of the non-confusion property for these states using the function `Channel.State.noConfusionType P v1 v2`.",
+        "Informal name": "Non-Confusion Proof Principle for Channel States"
+    },
+    "171": {
+        "Formal name": "IO.Channel.State.recOn",
+        "Formal statement": "{α : Type} →\n  {motive : Channel.State α → Sort u} →\n    (t : Channel.State α) →\n      ((values : Std.Queue α) →\n          (consumers : Std.Queue (Promise (Option α))) →\n            (closed : Bool) → motive { values := values, consumers := consumers, closed := closed }) →\n        motive t",
+        "Informal statement": "The function `IO.Channel.State.recOn` is a variant of the recursion principle for the `Channel.State α` type. It takes a type `α`, a motive function `motive` that maps a `Channel.State α` to a sort `u`, and a `Channel.State α` `t`. It also takes a function that defines the motive for a `Channel.State α` with given `values`, `consumers`, and `closed` fields. It then applies this motive function to `t`.",
+        "Informal name": "Variant recursion principle for Channel.State"
+    },
+    "172": {
+        "Formal name": "inline",
+        "Formal statement": "{α : Sort u} → α → α:= a",
+        "Informal statement": "The `inline` function is a compiler directive that instructs the compiler to replace the function call with the actual code of the function at the point of application, rather than creating a separate function call. This is done to optimize the performance by eliminating the overhead of a function call. The function takes two arguments: a type `α` of sort `u` and a value `a` of type `α`, and it returns a value of type `α`.",
+        "Informal name": "Compiler Inline Directive"
+    },
+    "173": {
+        "Formal name": "flip",
+        "Formal statement": "{α : Sort u} → {β : Sort v} → {φ : Sort w} → (α → β → φ) → β → α → φ:=\n  fun b a => f a b",
+        "Informal statement": "The function `flip` takes a function `f` of type `(α → β → φ)` and returns a new function that swaps the order of its arguments. Specifically, given two arguments `a : α` and `b : β`, the flipped function applies `f` to `b` and then `a`, effectively reversing the order of the arguments compared to the original function `f`.",
+        "Informal name": "Function argument order reversal"
+    },
+    "174": {
+        "Formal name": "Function.const_apply",
+        "Formal statement": "∀ {β : Sort u_1} {α : Sort u_2} {y : β} {x : α}, Function.const α y x = y",
+        "Informal statement": "For any types $β$ and $α$, and any elements $y : β$ and $x : α$, the application of the constant function `Function.const α y` to $x$ is equal to $y$. This means that regardless of the input $x$ from the type $α$, the constant function always returns the same value $y$ from the type $β$.",
+        "Informal name": "Application of Constant Function"
+    },
+    "175": {
+        "Formal name": "Function.comp_apply",
+        "Formal statement": "∀ {β : Sort u_1} {δ : Sort u_2} {α : Sort u_3} {f : β → δ} {g : α → β} {x : α}, (f ∘ g) x = f (g x)",
+        "Informal statement": "For any types \\( \\beta \\), \\( \\delta \\), and \\( \\alpha \\), and for any functions \\( f : \\beta \\rightarrow \\delta \\) and \\( g : \\alpha \\rightarrow \\beta \\), and any element \\( x \\) in \\( \\alpha \\), the composition of \\( f \\) and \\( g \\) applied to \\( x \\) is equal to \\( f \\) applied to the result of \\( g \\) applied to \\( x \\). In other words, \\( (f \\circ g)(x) = f(g(x)) \\).",
+        "Informal name": "Function Composition Application"
+    },
+    "176": {
+        "Formal name": "Thunk",
+        "Formal statement": "Type u → Type u",
+        "Informal statement": "The `Thunk` structure represents a type that encapsulates a computation, which is deferred until its result is needed. It is a way to introduce lazy evaluation in Lean, where the computation is not performed until the value is accessed using `Thunk.get`. Once the computation is done, the result is cached and subsequent accesses do not recompute the value.",
+        "Informal name": "Lazy Computation Structure"
+    },
+    "177": {
+        "Formal name": "Thunk.pure",
+        "Formal statement": "{α : Type u_1} → α → Thunk α:=\n  ⟨fun _ => a⟩",
+        "Informal statement": "The function `Thunk.pure` takes a type `α` and a value `a` of type `α` and returns a `Thunk α`. It creates a `Thunk` that immediately holds the provided value, without any deferred computation. The value is stored directly in the `Thunk`, bypassing the need for lazy evaluation, as indicated by the use of the lambda function `fun _ => a`, which returns `a` regardless of its argument.",
+        "Informal name": "Immediate Value Storage in Thunk"
+    },
+    "178": {
+        "Formal name": "Thunk.get",
+        "Formal statement": "{α : Type u_1} → Thunk α → α:=\n  x.fn ()",
+        "Informal statement": "The function `Thunk.get` takes a type `α` and a `Thunk α` and returns the value `α` stored within the `Thunk`. It forces the evaluation of the thunk by calling the stored function `fn` with the `Unit` value `()`, thereby extracting the result and caching it for subsequent calls. This operation ensures that the value is computed and made available for immediate use, with subsequent calls to `get` retrieving the cached value in constant time.",
+        "Informal name": "Thunk Evaluation and Caching"
+    },
+    "179": {
+        "Formal name": "Thunk.map",
+        "Formal statement": "{α : Type u_1} → {β : Type u_2} → (α → β) → Thunk α → Thunk β:=\n  ⟨fun _ => f x.get⟩",
+        "Informal statement": "The function `Thunk.map` takes a type `α`, a type `β`, a function `f` from `α` to `β`, and a `Thunk α`, and returns a `Thunk β`. It applies the function `f` to the value stored in the `Thunk α` after evaluating it using `Thunk.get`. The result is then wrapped in a new `Thunk β`, effectively mapping the function over the thunk without evaluating the result until it is explicitly requested.",
+        "Informal name": "Function Mapping over Thunk"
+    },
+    "180": {
+        "Formal name": "Thunk.bind",
+        "Formal statement": "{α : Type u_1} → {β : Type u_2} → Thunk α → (α → Thunk β) → Thunk β:=\n  ⟨fun _ => (f x.get).get⟩",
+        "Informal statement": "The function `Thunk.bind` takes a `Thunk α` and a function `f` that maps an `α` to a `Thunk β`. It constructs a new `Thunk β` by applying `f` to the result of `x.get`, which is the value stored within the `Thunk α`. The result of this application is then wrapped in a new `Thunk β`. The evaluation of the new `Thunk β` is deferred until it is forced by a call to `Thunk.get` on it.",
+        "Informal name": "Thunk Binding"
+    },
+    "181": {
+        "Formal name": "Thunk.sizeOf_eq",
+        "Formal statement": "∀ {α : Type u_1} [inst : SizeOf α] (a : Thunk α), sizeOf a = 1 + sizeOf (Thunk.get a)",
+        "Informal statement": "For any type \\( \\alpha \\) with an instance of `SizeOf`, and any `Thunk \\alpha` named `a`, the size of `a` is equal to 1 plus the size of the result obtained by evaluating `a` using `Thunk.get`. This reflects the fact that a `Thunk` itself has a size of 1, and the evaluation of its contained computation may have an additional size.",
+        "Informal name": "Size of Thunk and its Evaluation"
+    },
+    "182": {
+        "Formal name": "thunkCoe",
+        "Formal statement": "{α : Type u_1} → CoeTail α (Thunk α)",
+        "Informal statement": "For any type \\( \\alpha \\), there exists a coercion from \\( \\alpha \\) to the lazy computation type \\( \\text{Thunk} \\alpha \\), which encapsulates a computation that is deferred until its result is needed. This coercion is defined using the `CoeTail` structure, which allows for coercions that can only appear at the end of a sequence of coercions.",
+        "Informal name": "Coercion to Lazy Computation Type"
+    },
+    "183": {
+        "Formal name": "Eq.ndrecOn",
+        "Formal statement": "{α : Sort u2} → {a : α} → {motive : α → Sort u1} → {b : α} → a = b → motive a → motive b",
+        "Informal statement": "The `Eq.ndrecOn` function is a variant of `Eq.ndrec` where the equality argument is placed first. It takes a type `α`, elements `a` and `b` of that type, a motive function that maps an element of `α` to a sort `u1`, a proof that `a` is equal to `b`, and the motive applied to `a`, and returns the motive applied to `b`.",
+        "Informal name": "Non-dependent Equality Recursion with First Equality Argument"
+    },
+    "184": {
+        "Formal name": "Iff",
+        "Formal statement": "Prop → Prop → Prop",
+        "Informal statement": "The structure `Iff` represents the logical bi-implication operator, which takes two propositions `a` and `b` and asserts that `a` implies `b` and `b` implies `a`. In other words, `a ↔ b` is true if and only if `a` and `b` are equivalent propositions.",
+        "Informal name": "Logical Bi-implication"
+    },
+    "185": {
+        "Formal name": "Sum",
+        "Formal statement": "Type u → Type v → Type (max u v)",
+        "Informal statement": "The `Sum α β` type, denoted as `α ⊕ β`, represents the disjoint union of types `α` and `β`. An element of `α ⊕ β` is either an `inl` constructor wrapping an element `a : α`, or an `inr` constructor wrapping an element `b : β`.",
+        "Informal name": "Disjoint Union of Types"
+    },
+    "186": {
+        "Formal name": "PSum",
+        "Formal statement": "Sort u → Sort v → Sort (max (max 1 u) v)",
+        "Informal statement": "The `PSum` type constructor takes two types `α` and `β` of arbitrary sorts `Sort u` and `Sort v`, respectively, and constructs their disjoint union. This union is a type that includes all elements of `α` and `β` without any overlap, and it is denoted as `α ⊎' β` or `PSum α β`. The `PSum` type is particularly useful when one of the types is a proposition, allowing for the construction of sums like `True ⊎' Nat`. Unlike the `Sum` type, which is restricted to `Type u` and `Type v`, `PSum` can handle arbitrary sorts, but it resides in the universe `Sort (max (max 1 u) v)`, which can lead to complications with universe level unification.",
+        "Informal name": "Disjoint Union of Arbitrary Sorts"
+    },
+    "187": {
+        "Formal name": "Sigma",
+        "Formal statement": "{α : Type u} → (α → Type v) → Type (max u v)",
+        "Informal statement": "The Sigma type, denoted as `Σ a : α, β a` or `(a : α) × β a`, is the type of dependent pairs where the first component is `a : α` and the second component is `b : β a`. The type of the second component can depend on the value of the first component. It is also known as the dependent sum type, as it is the type-level version of an indexed summation.",
+        "Informal name": "Dependent Sum Type"
+    },
+    "188": {
+        "Formal name": "PSigma",
+        "Formal statement": "{α : Sort u} → (α → Sort v) → Sort (max (max 1 u) v)",
+        "Informal statement": "The PSigma type, denoted as Σ' a : α, β a or (a : α) ×' β a, represents the type of dependent pairs where the first component is an element a : α and the second component is an element b : β a, with the type of the second component potentially depending on the value of the first component. Unlike the Sigma type, PSigma allows α and β to have arbitrary sorts Sort u and Sort v, enabling its use in scenarios where one side is a proposition, such as (p : Nat) ×' p = p. However, due to its placement in the Sort (max (max 1 u) v) universe, it may cause issues with universe level unification. PSigma is typically employed in automation that constructs pairs of arbitrary types.",
+        "Informal name": "Dependent Pair Type with Arbitrary Sorts"
+    },
+    "189": {
+        "Formal name": "Exists",
+        "Formal statement": "{α : Sort u} → (α → Prop) → Prop",
+        "Informal statement": "The `Exists` inductive type represents the existential quantification in predicate logic. Given a type `α` and a predicate `p : α → Prop`, `Exists α p` asserts the existence of an element `x : α` such that `p x` holds. To construct a proof of `Exists α p`, one can use the `exists` tactic or the anonymous constructor notation `⟨x, h⟩`, where `h` is a proof of `p x`. To use the information from an existential proof, one can use the `cases` tactic on the proof `h` of `Exists α p`, or `let ⟨x, hx⟩ := h`.",
+        "Informal name": "Existential Quantification"
+    },
+    "190": {
+        "Formal name": "ForInStep",
+        "Formal statement": "Type u → Type u",
+        "Informal statement": "The `ForInStep` inductive type represents the possible outcomes of the body of a for loop in a programming construct. It has two constructors:\n\n1. `.yield (a : α)`: This constructor indicates that the loop should continue, and `a` is the new state. It corresponds to the `continue` statement in the loop body or reaching the end of the loop body without encountering a `break` or `return`.\n\n2. `.done (a : α)`: This constructor signifies that the loop should terminate prematurely with the state `a`. It is used when a `break` or `return` statement is encountered within the loop body.",
+        "Informal name": "For-In Loop Step Type"
+    },
+    "191": {
+        "Formal name": "instInhabitedForInStep",
+        "Formal statement": "{a : Type u_1} → [inst : Inhabited a] → Inhabited (ForInStep a)",
+        "Informal statement": "For any type \\( a \\) that is inhabited, the type of loop steps \\( \\text{ForInStep} \\, a \\) is also inhabited. This instance provides a designated element for \\( \\text{ForInStep} \\, a \\), which can be used as a default value in the context of loop operations.",
+        "Informal name": "Inhabited Loop Step Type for Inhabited Types"
+    },
+    "192": {
+        "Formal name": "ForIn",
+        "Formal statement": "(Type u₁ → Type u₂) → Type u → outParam (Type v) → Type (max (max (max u (u₁ + 1)) u₂) v)",
+        "Informal statement": "The `ForIn` structure is a typeclass that supports the `for x in xs` notation. It defines a loop construct where `xs` is a collection of type `α`, and `x` is an element of type `β` that is accessible within the loop. The `m` parameter represents the monad for the encompassing `do` block.",
+        "Informal name": "ForIn Loop Typeclass"
+    },
+    "193": {
+        "Formal name": "ForIn'",
+        "Formal statement": "(Type u₁ → Type u₂) →\n  (ρ : Type u) → (α : outParam (Type v)) → outParam (Membership α ρ) → Type (max (max (max u (u₁ + 1)) u₂) v)",
+        "Informal statement": "The `ForIn'` structure is an extension of the `ForIn` typeclass that provides support for the `for h : x in xs` notation. It extends the `ForIn` functionality by additionally providing a membership proof `h : x ∈ xs` as an argument to the loop body. This allows for more explicit reasoning about the membership of `x` in the collection `xs` within the loop context. The `ρ` parameter represents the type of the collection, `α` is the type of elements in the collection, and the resulting type is the maximum of the universe levels involved.",
+        "Informal name": "ForIn' Loop Typeclass with Membership Proof"
+    },
+    "194": {
+        "Formal name": "DoResultPRBC",
+        "Formal statement": "Type u → Type u → Type u → Type u",
+        "Informal statement": "The `DoResultPRBC` type is an auxiliary type used in the compilation of `do` notation, particularly when nested within combinators like `tryCatch`. It represents the different ways a `do` block can terminate: (1) `pure (a : α) s` indicates the block exited normally with a return value `a`; (2) `return (b : β) s` signifies the block exited early due to a `return b` command; (3) `break s` means the `break` statement was executed, causing an exit from the enclosing loop; (4) `continue s` indicates the `continue` statement was called, prompting a move to the next iteration of the enclosing loop. Each case returns a value `s : σ` that encapsulates all mutable variables within the `do` block.",
+        "Informal name": "Do Block Exit Representation"
+    },
+    "195": {
+        "Formal name": "DoResultPR",
+        "Formal statement": "Type u → Type u → Type u → Type u",
+        "Informal statement": "The `DoResultPR` type is an auxiliary type used in the compilation of `do` notation. It is a specialized version of `DoResultPRBC` that does not include the `break` and `continue` operations, as it is not intended for use in a loop context. It takes three type parameters `α`, `β`, and `γ`, and maps them to a new type `u`.",
+        "Informal name": "Do notation result type without break and continue"
+    },
+    "196": {
+        "Formal name": "DoResultBC",
+        "Formal statement": "Type u → Type u",
+        "Informal statement": "The `DoResultBC` is an auxiliary inductive type used to optimize `do` notation in Lean. It is a specialized version of `DoResultPRBC PEmpty PEmpty σ` that eliminates the impossible cases where neither `pure` nor `return` are viable exit paths. This type takes a universe level `u` and maps it to another universe level `u`, effectively defining a type constructor that is used to streamline the execution of `do` notation in certain scenarios.",
+        "Informal name": "Optimized Do Notation Result Type"
+    },
+    "197": {
+        "Formal name": "DoResultSBC",
+        "Formal statement": "Type u → Type u → Type u",
+        "Informal statement": "The `DoResultSBC` is an auxiliary inductive type used to optimize `do` notation in Lean. It is a specialized version of `DoResultPRBC α PEmpty σ` or `DoResultPRBC PEmpty α σ`, designed to eliminate the impossible case where neither `pure` nor `return` is used. This type takes two arguments of type `Type u` and returns a type of `Type u`, facilitating the compilation of `do` notation by avoiding unnecessary cases.",
+        "Informal name": "Optimized Do Notation Auxiliary Type"
+    },
+    "198": {
+        "Formal name": "HasEquiv",
+        "Formal statement": "Sort u → Sort (max u (v + 1))",
+        "Informal statement": "The `HasEquiv` structure is a typeclass that provides support for the notation `x ≈ y`, where `x` and `y` are elements of type `α`. This notation indicates an equivalence relation between `x` and `y`. The structure is defined in a way that allows it to be extended to different types `α` and `β` with the maximum of `u` and `v + 1` as the sort.",
+        "Informal name": "Equivalence Relation Support Structure"
+    },
+    "199": {
+        "Formal name": "EmptyCollection",
+        "Formal statement": "Type u → Type u",
+        "Informal statement": "The `EmptyCollection α` structure is a typeclass that provides support for the notation `∅` (empty set) or `{}` for a given type `α`. It represents the concept of an empty collection of elements of type `α`.",
+        "Informal name": "Empty Collection Typeclass"
+    }
+}
