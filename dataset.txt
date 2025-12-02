@@ -1,10 +1,21 @@
+https://lean-lang.org/learn/#core-documentation
+
 lake +leanprover/lean4:v4.24.0 new lean4
+
+lean:
+https://lean-lang.org/learn/#core-documentation
+https://www.leanprover.cn/
+
+https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Functions-and-Definitions/#functions-and-definitions
+https://leanprover-community.github.io/lean4-metaprogramming-book/main/01_intro.html
 
 math articles:
 https://juejin.cn/column/7463735155417727016
 https://www.lookeng.cn/2024/10/15/lean/iclr2024-formal-proof-lean/#3-herald-%E4%B8%80%E4%B8%AA%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E6%B3%A8%E9%87%8A%E7%9A%84-lean-4-%E6%95%B0%E6%8D%AE%E9%9B%86
 http://faculty.bicmr.pku.edu.cn/~dongbin/Data/AI4M2025.pdf
 https://www.themoonlight.io/zh/review/lean-workbook-a-large-scale-lean-problem-set-formalized-from-natural-language-math-problems
+https://www.lookeng.cn/2024/10/15/lean/iclr2024-formal-proof-lean/
+https://www.themoonlight.io/zh/review/herald-a-natural-language-annotated-lean-4-dataset
 
 lean mcp:
 https://lobehub.com/nl/mcp/ooooooo-lean-lsp-mcp
@@ -32,17 +43,19 @@ HERALD:
   https://arxiv.org/pdf/2403.13310
   https://huggingface.co/FrenzyMath/LeanSearch-PS
   
+  https://openreview.net/pdf?id=Se6MgCtRhz
+
+  Tevatron：
+  chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://arxiv.org/pdf/2203.05765
+  https://github.com/texttron/tevatron/
+  https://texttron.github.io/tevatron/
+  
   prover:
   https://github.com/frenzymath/reap
   https://arxiv.org/pdf/2505.20613
   https://huggingface.co/FrenzyMath/REAL-Prover
   https://zhuanlan.zhihu.com/p/1913682321581769354
-  https://www.themoonlight.io/zh/review/real-prover-retrieval-augmented-lean-prover-for-mathematical-reasoning
-
-CriticLean
-https://www.youtube.com/watch?v=p-JVhSZnPK0
-https://huggingface.co/papers/2507.06181
-
+  
 reason:
 https://arxiv.org/pdf/2308.09583
 
@@ -57,6 +70,25 @@ https://huggingface.co/datasets/TIGER-Lab/MathInstruct/viewer?views%5B%5D=train
 ProverBench:
 https://huggingface.co/datasets/deepseek-ai/DeepSeek-ProverBench
 
-elan:
-https://github.com/leanprover/elan/releases
-version: 4.1.2 (latest)
+LeanDojo
+https://github.com/lean-dojo/LeanDojo
+https://www.youtube.com/watch?v=qvaR_VXB4fA&t=11s
+
+tevatron
+https://huggingface.co/Tevatron
+https://github.com/texttron/tevatron/
+
+embeddeding finetuning:
+https://www.youtube.com/watch?v=v28Pu7hsJ0s
+https://www.youtube.com/live/gUJkyp9j3sM?si=r1Q7CjYTwbzpSToR
+
+Deepseek:
+https://arxiv.org/abs/2408.08152
+
+break large problem to smalls:
+https://arxiv.org/pdf/2503.00735
+https://www.youtube.com/watch?v=caPElgUhMvo&t=9s
+
+small model:
+https://huggingface.co/WeiboAI/VibeThinker-1.5B
+https://arxivexplained.com/papers/tiny-model-big-logic-diversity-driven-optimization-elicits-large-model-reasoning-ability-in-vibethinker-15b
